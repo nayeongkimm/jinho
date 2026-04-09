@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shop — Jinho Kim</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Asul:wght@400;700&display=block" as="style" />
+  <link href="https://fonts.googleapis.com/css2?family=Asul:wght@400;700&display=block" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: 'Pretendard';
+      src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+      font-weight: 400; font-style: normal;
+    }
+
+    :root {
+      --font-en: 'Asul', Georgia, serif;
+      --font-ko: 'Pretendard', -apple-system, sans-serif;
+      --text-primary: #1A1A1A;
+      --text-secondary: #6B6661;
+      --text-muted: #A19994;
+      --text-light: #747474;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { -webkit-font-smoothing: antialiased; }
+    body {
+      background: #FFFFFF;
+      color: var(--text-primary);
+      font-family: var(--font-ko);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── Header ─── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      background: #fff;
+      z-index: 1100;
+    }
+    .header-logo {
+      font-family: var(--font-en);
+      font-size: 20px;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+    .header-nav {
+      display: flex;
+      gap: 40px;
+      align-items: center;
+    }
+    .header-nav a {
+      font-family: var(--font-en);
+      font-size: 14px;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: color 0.3s;
+      position: relative;
+      padding-bottom: 4px;
+    }
+    .header-nav a::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 1px;
+      background: var(--text-primary);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+    .header-nav a:hover::after { transform: scaleX(1); }
+    .header-nav a.active {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    /* ─── Hamburger Menu ─── */
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      position: relative;
+      padding: 0;
+      z-index: 1100;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 1.5px;
+      background: var(--text-primary);
+      position: absolute;
+      left: 0;
+      transition: all 0.3s ease;
+    }
+    .hamburger span:nth-child(1) { top: 6px; }
+    .hamburger span:nth-child(2) { top: 11.5px; }
+    .hamburger span:nth-child(3) { top: 17px; }
+    .hamburger.open span:nth-child(1) {
+      top: 11.5px;
+      transform: rotate(45deg);
+    }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) {
+      top: 11.5px;
+      transform: rotate(-45deg);
+    }
+
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255, 255, 255, 0.95);
+      z-index: 1050;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 0 40px;
+      gap: 16px;
+    }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a {
+      font-family: var(--font-en);
+      font-size: 24px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      text-decoration: none;
+      letter-spacing: 2px;
+      transition: opacity 0.3s;
+    }
+    .mobile-nav a:hover { opacity: 0.5; }
+
+    /* ─── Shop Content ─── */
+    .shop-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 40px;
+      min-height: calc(100vh - 64px - 64px);
+    }
+    .coming-soon {
+      font-family: var(--font-en);
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 60px;
+      text-align: center;
+    }
+    .preview-images {
+      display: flex;
+      gap: 20px;
+      width: 100%;
+    }
+    .preview-images img {
+      flex: 1;
+      min-width: 0;
+      height: auto;
+      aspect-ratio: 4 / 4;
+      opacity: 0.3;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* ─── Footer ─── */
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 40px;
+      height: 64px;
+    }
+    .footer p {
+      font-family: var(--font-en);
+      font-size: 11px;
+      color: var(--text-light);
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 767px) {
+      .header {
+        padding: 0 24px;
+      }
+      .header-nav {
+        display: none;
+      }
+      .hamburger {
+        display: block;
+      }
+      .mobile-nav {
+        padding: 0 24px;
+      }
+      .header-logo {
+        font-size: 17px;
+      }
+      .shop-content {
+        padding: 0 24px;
+      }
+      .preview-images {
+        gap: 20px;
+      }
+      .footer {
+        padding: 0 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <a href="preview-homepage.html" class="header-logo">Jinho Kim</a>
+    <nav class="header-nav">
+      <a href="works.html">Works</a>
+      <a href="about.html">About</a>
+      <a href="shop.html" class="active">Shop</a>
+    </nav>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <nav class="mobile-nav" id="mobileNav">
+    <a href="works.html">Works</a>
+    <a href="about.html">About</a>
+    <a href="shop.html">Shop</a>
+  </nav>
+
+  <!-- Shop Content -->
+  <main class="shop-content">
+    <h1 class="coming-soon">Coming Soon</h1>
+    <div class="preview-images" id="previewImages"></div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>© 2026 Jinho Kim, All rights reserved</p>
+    <p>Designed by Nayeong Kim</p>
+  </footer>
+
+  <script>
+    // All artwork paths for random selection
+    const allImages = [
+      'artworks/web/노닐다/노닐다 40호 (2023).jpg',
+      'artworks/web/노닐다/노닐다10 6호 (2025).jpg',
+      'artworks/web/노닐다/노닐다11 6호 (2025).jpg',
+      'artworks/web/노닐다/노닐다13 6호 (2025).jpg',
+      'artworks/web/노닐다/노닐다14 6호 (2025).jpg',
+      'artworks/web/노닐다/노닐다15 50호 (2025).jpg',
+      'artworks/web/노닐다/노닐다17 50호 (2025).jpg',
+      'artworks/web/노닐다/노닐다18 10호 (2025).jpg',
+      'artworks/web/노닐다/노닐다3 10호 (2023).jpg',
+      'artworks/web/노닐다/노닐다4 20호 (2023).jpg',
+      'artworks/web/노닐다/노닐다5 50호 (2024).jpg',
+      'artworks/web/노닐다/노닐다7 50호 (2024).jpg',
+      'artworks/web/노닐다/노닐다9 6호 (2025).jpg',
+      'artworks/web/노닐다/봄 그림자 20호 (2023).jpg',
+      'artworks/web/노닐다/봄날2 10호 (2024).jpg',
+      'artworks/web/노닐다/봄날3 20호 (2024).jpg',
+      'artworks/web/노닐다/봄봄 8호 (2022).jpg',
+      'artworks/web/노닐다/봄봄2 10호 (2022).jpg',
+      'artworks/web/노닐다/봄봄4 40호 (2022).jpg',
+      'artworks/web/노닐다/봄봄5 10호 (2022).jpg',
+      'artworks/web/노닐다/봄봄6 40호 (2023).jpg',
+      'artworks/web/노닐다/봄봄7 10호 (2023).jpg',
+      'artworks/web/노닐다/봄봄8 20호 (2023).jpg',
+      'artworks/web/노닐다/봄봄9 20호 (2023).jpg',
+      'artworks/web/노닐다/열정 10호 (2024).jpg',
+      'artworks/web/노닐다/흐름 20호 (2023).jpg',
+      'artworks/web/봄봄/기다림 20호 (2021).jpg',
+      'artworks/web/봄봄/꽃잎 끝에 걸린 봄날 10호 (2020).jpg',
+      'artworks/web/봄봄/바람에 날려온 봄 20호 (2020).jpg',
+      'artworks/web/봄봄/봄봄 50호 (2021).jpg',
+      'artworks/web/봄봄/아내의 공간 10호 (2020).jpg',
+      'artworks/web/봄봄/이른 봄 8호 (2020).jpg',
+      'artworks/web/사랑비/사랑비 (2010).jpg',
+      'artworks/web/사랑비/사랑비 (2012).jpg',
+      'artworks/web/사랑비/사랑비 (2013).jpg',
+      'artworks/web/사랑비/사랑비 (2014).jpg',
+      'artworks/web/사랑비/사랑비 (2015).jpg',
+      'artworks/web/사랑비/사랑비 6호 (2015).jpg',
+      'artworks/web/사랑비/사랑비3 (2011).jpg',
+      'artworks/web/사랑비/사랑비4 (2011).jpg',
+      'artworks/web/사랑비/사랑비52 50호 (2017).jpg',
+      'artworks/web/사랑비/사랑비60 20호 (2018).jpg',
+      'artworks/web/사랑비/사랑비61 50호 (2019).jpg'
+    ];
+
+    // Shuffle and pick 4 random images
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    const selected = shuffle(allImages).slice(0, 3);
+    const container = document.getElementById('previewImages');
+
+    selected.forEach(src => {
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = '';
+      img.draggable = false;
+      container.appendChild(img);
+    });
+
+    // ═══ Hamburger Menu ═══
+    const hamburger = document.getElementById('hamburger');
+    const mobileNav = document.getElementById('mobileNav');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileNav.classList.toggle('open');
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Works — Jinho Kim</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Asul:wght@400;700&display=block" as="style" />
+  <link href="https://fonts.googleapis.com/css2?family=Asul:wght@400;700&display=block" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: 'Pretendard';
+      src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+      font-weight: 400; font-style: normal;
+    }
+
+    :root {
+      --font-en: 'Asul', Georgia, serif;
+      --font-ko: 'Pretendard', -apple-system, sans-serif;
+      --text-primary: #1A1A1A;
+      --text-secondary: #6B6661;
+      --text-muted: #A19994;
+      --text-light: #747474;
+      --bg-card: #F5F2F0;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { -webkit-font-smoothing: antialiased; }
+    body {
+      background: #FFFFFF;
+      color: var(--text-primary);
+      font-family: var(--font-ko);
+      min-height: 100vh;
+    }
+
+    /* ─── Header ─── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      background: #fff;
+      z-index: 1100;
+    }
+    .header-logo {
+      font-family: var(--font-en);
+      font-size: 20px;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+    .header-nav {
+      display: flex;
+      gap: 40px;
+      align-items: center;
+    }
+    .header-nav a {
+      font-family: var(--font-en);
+      font-size: 14px;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: color 0.3s;
+      position: relative;
+      padding-bottom: 4px;
+    }
+    .header-nav a::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 1px;
+      background: var(--text-primary);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+    .header-nav a:hover::after { transform: scaleX(1); }
+    .header-nav a.active {
+      font-weight: 700;
+    }
+
+    /* ─── Hamburger Menu ─── */
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      position: relative;
+      padding: 0;
+      z-index: 1100;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 1.5px;
+      background: var(--text-primary);
+      position: absolute;
+      left: 0;
+      transition: all 0.3s ease;
+    }
+    .hamburger span:nth-child(1) { top: 6px; }
+    .hamburger span:nth-child(2) { top: 11.5px; }
+    .hamburger span:nth-child(3) { top: 17px; }
+    .hamburger.open span:nth-child(1) {
+      top: 11.5px;
+      transform: rotate(45deg);
+    }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) {
+      top: 11.5px;
+      transform: rotate(-45deg);
+    }
+
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255, 255, 255, 0.95);
+      z-index: 1050;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 0 40px;
+      gap: 16px;
+    }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a {
+      font-family: var(--font-en);
+      font-size: 24px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      text-decoration: none;
+      letter-spacing: 2px;
+      transition: opacity 0.3s;
+    }
+    .mobile-nav a:hover { opacity: 0.5; }
+
+    /* ─── Main Content ─── */
+    .main {
+      padding: 0 40px;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    /* ─── Filter Tabs (sticky below header) ─── */
+    .filter-section {
+      position: sticky;
+      top: 64px;
+      z-index: 90;
+      background: #fff;
+      margin-top: 100px;
+      padding: 0 0 10px 0;
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 48px;
+      align-items: center;
+      justify-content: center;
+      height: 40px;
+    }
+    .filter-tab {
+      font-size: 14px;
+      white-space: nowrap;
+      color: var(--text-muted);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0 0 4px 0;
+      transition: color 0.3s;
+      position: relative;
+    }
+    .filter-tab::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 1px;
+      background: var(--text-primary);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+    .filter-tab:hover::after { transform: scaleX(1); }
+    .filter-tab.active {
+      font-family: var(--font-en);
+      color: var(--text-primary);
+    }
+    .filter-tab:not(.active) {
+      font-family: var(--font-en), var(--font-ko);
+    }
+    .filter-tab:hover { color: var(--text-primary); }
+
+    /* ─── Artwork Grid ─── */
+    .artwork-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 70px 24px;
+      margin-top: 140px;
+    }
+    .artwork-card {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      cursor: pointer;
+    }
+    .artwork-number {
+      font-family: var(--font-en);
+      font-size: 12px;
+      letter-spacing: 0.96px;
+      color: var(--text-muted);
+    }
+    .artwork-img-wrap {
+      width: 100%;
+      background: var(--bg-card);
+      overflow: hidden;
+    }
+    .artwork-img-wrap img {
+      display: block;
+      width: 100%;
+      height: auto;
+      transition: transform 0.4s ease;
+    }
+    .artwork-card:hover .artwork-img-wrap img {
+      transform: scale(1.03);
+    }
+    .artwork-info {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .artwork-title {
+      font-family: var(--font-ko);
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+    .artwork-meta {
+      font-family: var(--font-ko);
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    /* ─── Lightbox ─── */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0, 0, 0, 0.92);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+      cursor: pointer;
+    }
+    .lightbox.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .lightbox-img-area {
+      flex: 1 1 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 0;
+      padding: 40px 40px 0 40px;
+      box-sizing: border-box;
+    }
+    .lightbox-img-area img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    .lightbox-info {
+      flex-shrink: 0;
+      text-align: center;
+      padding: 20px 40px 40px;
+      opacity: 0;
+      transition: opacity 0.3s ease 0.15s;
+    }
+    .lightbox.active .lightbox-info {
+      opacity: 1;
+    }
+    .lightbox-title {
+      font-family: var(--font-ko);
+      font-size: 15px;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .lightbox-meta {
+      font-family: var(--font-ko);
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* ─── Contact + Footer Wrap ─── */
+    .contact-footer-wrap {
+      background: #FAFAF7;
+      margin-top: 200px;
+    }
+
+    /* ─── Contact Section ─── */
+    .contact-section {
+      padding: 80px 40px 0;
+      min-height: 374px;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+    .contact-title {
+      font-family: var(--font-en);
+      font-size: 48px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+    }
+    .contact-subtitle {
+      font-family: var(--font-ko);
+      font-size: 15px;
+      color: var(--text-secondary);
+      margin-bottom: 48px;
+    }
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .contact-row {
+      font-family: var(--font-en);
+      font-size: 15px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .contact-row .label {
+      font-size: 13px;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      min-width: 24px;
+    }
+    .contact-row a {
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .contact-row a:hover {
+      color: var(--text-secondary);
+    }
+
+    /* ─── Footer ─── */
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 40px;
+      height: 64px;
+      margin-top: 50px;
+    }
+    .footer p {
+      font-family: var(--font-en);
+      font-size: 11px;
+      color: var(--text-light);
+    }
+
+    /* ─── Responsive ─── */
+
+    /* Tablet: 3 columns */
+    @media (max-width: 1023px) {
+      .artwork-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 50px 24px;
+      }
+      .filter-tabs {
+        gap: 32px;
+      }
+      .filter-section {
+        margin-top: 60px;
+      }
+      .artwork-grid {
+        margin-top: 90px;
+      }
+    }
+
+    /* Mobile: 2 columns */
+    @media (max-width: 767px) {
+      .header {
+        padding: 0 24px;
+      }
+      .header-nav {
+        display: none;
+      }
+      .hamburger {
+        display: block;
+      }
+      .mobile-nav {
+        padding: 0 24px;
+      }
+      .header-logo {
+        font-size: 17px;
+      }
+      .main {
+        padding: 0 24px;
+      }
+      .filter-section {
+        margin-top: 30px;
+        padding-bottom: 8px;
+      }
+      .filter-tabs {
+        gap: 20px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        justify-content: flex-start;
+      }
+      .filter-tab {
+        font-size: 13px;
+      }
+      .artwork-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 32px 20px;
+        margin-top: 60px;
+      }
+      .artwork-title {
+        font-size: 13px;
+      }
+      .artwork-meta {
+        font-size: 10px;
+      }
+      .contact-footer-wrap {
+        margin-top: 100px;
+      }
+      .contact-section {
+        padding: 48px 24px 0;
+      }
+      .contact-title {
+        font-size: 32px;
+      }
+      .contact-subtitle {
+        margin-bottom: 32px;
+      }
+      .footer {
+        padding: 0 24px;
+        margin-top: 40px;
+      }
+      .lightbox-img-area {
+        padding: 24px 24px 0;
+      }
+      .lightbox-info {
+        padding: 16px 24px 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <a href="preview-homepage.html" class="header-logo">Jinho Kim</a>
+    <nav class="header-nav">
+      <a href="works.html" class="active">Works</a>
+      <a href="about.html">About</a>
+      <a href="shop.html">Shop</a>
+    </nav>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <nav class="mobile-nav" id="mobileNav">
+    <a href="works.html">Works</a>
+    <a href="about.html">About</a>
+    <a href="shop.html">Shop</a>
+  </nav>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="filter-section">
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="selected">Selected Works (10)</button>
+        <button class="filter-tab" data-filter="노닐다">노닐다 (26)</button>
+        <button class="filter-tab" data-filter="봄봄">봄봄 (6)</button>
+        <button class="filter-tab" data-filter="사랑비">사랑비 (11)</button>
+        <button class="filter-tab" data-filter="all">All (43)</button>
+      </div>
+    </div>
+
+    <div class="artwork-grid" id="artworkGrid"></div>
+  </main>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-img-area">
+      <img id="lightboxImg" src="" alt="" />
+    </div>
+    <div class="lightbox-info">
+      <div class="lightbox-title" id="lightboxTitle"></div>
+      <div class="lightbox-meta" id="lightboxMeta"></div>
+    </div>
+  </div>
+
+  <!-- Contact + Footer -->
+  <div class="contact-footer-wrap">
+    <section class="contact-section">
+      <h2 class="contact-title">Contact</h2>
+      <p class="contact-subtitle">For inquiries, commissions, or exhibitions</p>
+      <div class="contact-info">
+        <div class="contact-row">
+          <span class="label">E</span>
+          <a href="mailto:jinho@hanmail.net">jinho@hanmail.net</a>
+        </div>
+        <div class="contact-row">
+          <span class="label">T</span>
+          <a href="tel:+821029967817">+82 10-2996-7817</a>
+        </div>
+      </div>
+    </section>
+    <footer class="footer">
+      <p>© 2026 Jinho Kim, All rights reserved</p>
+      <p>Designed by Nayeong Kim</p>
+    </footer>
+  </div>
+
+  <script>
+    // ═══════════════════════════════════════
+    // ARTWORK DATA
+    // ═══════════════════════════════════════
+    const ALL_WORKS = [
+      // 사랑비 시리즈
+      { src: 'artworks/web/사랑비/사랑비 (2010).jpg', title: '사랑비', year: 2010, size: '', series: '사랑비' },
+      { src: 'artworks/web/사랑비/사랑비3 (2011).jpg', title: '사랑비3', year: 2011, size: '', series: '사랑비' },
+      { src: 'artworks/web/사랑비/사랑비4 (2011).jpg', title: '사랑비4', year: 2011, size: '', series: '사랑비' },
+      { src: 'artworks/web/사랑비/사랑비 (2012).jpg', title: '사랑비', year: 2012, size: '', series: '사랑비' },
+      { src: 'artworks/web/사랑비/사랑비 (2013).jpg', title: '사랑비', year: 2013, size: '', series: '사랑비' },
+      { src: 'artworks/web/사랑비/사랑비 (2014).jpg', title: '사랑비', year: 2014, size: '', series: '사랑비' },
+      { src: 'artworks/web/사랑비/사랑비 (2015).jpg', title: '사랑비', year: 2015, size: '', series: '사랑비' },
+      { src: 'artworks/web/사랑비/사랑비 6호 (2015).jpg', title: '사랑비', year: 2015, size: '6호', series: '사랑비' },
+      { src: 'artworks/web/사랑비/사랑비52 50호 (2017).jpg', title: '사랑비52', year: 2017, size: '50호', series: '사랑비' },
+      { src: 'artworks/web/사랑비/사랑비60 20호 (2018).jpg', title: '사랑비60', year: 2018, size: '20호', series: '사랑비' },
+      { src: 'artworks/web/사랑비/사랑비61 50호 (2019).jpg', title: '사랑비61', year: 2019, size: '50호', series: '사랑비' },
+      // 봄봄 시리즈
+      { src: 'artworks/web/봄봄/이른 봄 8호 (2020).jpg', title: '이른 봄', year: 2020, size: '8호', series: '봄봄' },
+      { src: 'artworks/web/봄봄/꽃잎 끝에 걸린 봄날 10호 (2020).jpg', title: '꽃잎 끝에 걸린 봄날', year: 2020, size: '10호', series: '봄봄' },
+      { src: 'artworks/web/봄봄/아내의 공간 10호 (2020).jpg', title: '아내의 공간', year: 2020, size: '10호', series: '봄봄' },
+      { src: 'artworks/web/봄봄/바람에 날려온 봄 20호 (2020).jpg', title: '바람에 날려온 봄', year: 2020, size: '20호', series: '봄봄' },
+      { src: 'artworks/web/봄봄/기다림 20호 (2021).jpg', title: '기다림', year: 2021, size: '20호', series: '봄봄' },
+      { src: 'artworks/web/봄봄/봄봄 50호 (2021).jpg', title: '봄봄', year: 2021, size: '50호', series: '봄봄' },
+      // 노닐다 시리즈
+      { src: 'artworks/web/노닐다/봄봄 8호 (2022).jpg', title: '봄봄', year: 2022, size: '8호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/봄봄2 10호 (2022).jpg', title: '봄봄2', year: 2022, size: '10호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/봄봄4 40호 (2022).jpg', title: '봄봄4', year: 2022, size: '40호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/봄봄5 10호 (2022).jpg', title: '봄봄5', year: 2022, size: '10호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/노닐다 40호 (2023).jpg', title: '노닐다', year: 2023, size: '40호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/노닐다3 10호 (2023).jpg', title: '노닐다3', year: 2023, size: '10호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/봄 그림자 20호 (2023).jpg', title: '봄 그림자', year: 2023, size: '20호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/봄봄6 40호 (2023).jpg', title: '봄봄6', year: 2023, size: '40호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/봄봄7 10호 (2023).jpg', title: '봄봄7', year: 2023, size: '10호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/봄봄8 20호 (2023).jpg', title: '봄봄8', year: 2023, size: '20호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/봄봄9 20호 (2023).jpg', title: '봄봄9', year: 2023, size: '20호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/흐름 20호 (2023).jpg', title: '흐름', year: 2023, size: '20호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/노닐다4 20호 (2023).jpg', title: '노닐다4', year: 2023, size: '20호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/노닐다5 50호 (2024).jpg', title: '노닐다5', year: 2024, size: '50호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/노닐다7 50호 (2024).jpg', title: '노닐다7', year: 2024, size: '50호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/봄날2 10호 (2024).jpg', title: '봄날2', year: 2024, size: '10호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/봄날3 20호 (2024).jpg', title: '봄날3', year: 2024, size: '20호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/열정 10호 (2024).jpg', title: '열정', year: 2024, size: '10호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/노닐다10 6호 (2025).jpg', title: '노닐다10', year: 2025, size: '6호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/노닐다11 6호 (2025).jpg', title: '노닐다11', year: 2025, size: '6호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/노닐다13 6호 (2025).jpg', title: '노닐다13', year: 2025, size: '6호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/노닐다14 6호 (2025).jpg', title: '노닐다14', year: 2025, size: '6호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/노닐다15 50호 (2025).jpg', title: '노닐다15', year: 2025, size: '50호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/노닐다17 50호 (2025).jpg', title: '노닐다17', year: 2025, size: '50호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/노닐다18 10호 (2025).jpg', title: '노닐다18', year: 2025, size: '10호', series: '노닐다' },
+      { src: 'artworks/web/노닐다/노닐다9 6호 (2025).jpg', title: '노닐다9', year: 2025, size: '6호', series: '노닐다' },
+    ];
+
+    // Selected Works — 각 시리즈에서 대표작 선별
+    const SELECTED_INDICES = [0, 7, 10, 12, 18, 21, 23, 39, 40, 41];
+
+    // ═══════════════════════════════════════
+    // RENDER GRID
+    // ═══════════════════════════════════════
+    const gridEl = document.getElementById('artworkGrid');
+
+    let renderGrid; // defined later with lightbox support
+
+    // ═══════════════════════════════════════
+    // FILTER TABS
+    // ═══════════════════════════════════════
+    const tabs = document.querySelectorAll('.filter-tab');
+
+    const filterSection = document.querySelector('.filter-section');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        renderGrid(tab.dataset.filter);
+
+        // Only scroll to top if user has scrolled past the grid start
+        // (i.e., filter is in sticky mode and grid items are partially hidden)
+        const stickyThreshold = gridEl.offsetTop - 114; // 64px header + 50px filter
+        if (window.scrollY > stickyThreshold) {
+          window.scrollTo({ top: stickyThreshold, behavior: 'instant' });
+        }
+      });
+    });
+
+    // ═══════════════════════════════════════
+    // LIGHTBOX (simple: click to enlarge, click anywhere to close)
+    // ═══════════════════════════════════════
+    const lightbox = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lightboxImg');
+    const lbTitle = document.getElementById('lightboxTitle');
+    const lbMeta = document.getElementById('lightboxMeta');
+
+    function openLightbox(work) {
+      lbImg.src = work.src;
+      lbImg.alt = work.title;
+      lbTitle.textContent = work.title;
+      lbMeta.textContent = work.size ? `${work.year}, ${work.size}` : `${work.year}`;
+      lightbox.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // Click anywhere to close
+    lightbox.addEventListener('click', closeLightbox);
+
+    // ESC to close
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox();
+    });
+
+    // ═══════════════════════════════════════
+    // RENDER GRID (with lightbox click)
+    // ═══════════════════════════════════════
+    function renderGridFull(filter) {
+      let works;
+      if (filter === 'selected') {
+        works = SELECTED_INDICES.map(i => ALL_WORKS[i]);
+      } else if (filter === 'all') {
+        works = [...ALL_WORKS];
+      } else {
+        works = ALL_WORKS.filter(w => w.series === filter);
+      }
+      // Sort: newest year first, then ascending number within same year
+      // e.g., 노닐다9 → 노닐다10 → 노닐다11 (extract trailing number)
+      function extractNum(title) {
+        const m = title.match(/(\d+)\s*$/);
+        return m ? parseInt(m[1], 10) : 0;
+      }
+      works.sort((a, b) => {
+        if (a.year !== b.year) return b.year - a.year;
+        return extractNum(b.title) - extractNum(a.title);
+      });
+
+      gridEl.innerHTML = '';
+      works.forEach((work, i) => {
+        const card = document.createElement('div');
+        card.className = 'artwork-card';
+        const num = String(i + 1).padStart(2, '0');
+        const meta = work.size ? `${work.year}년, ${work.size}` : `${work.year}년`;
+        card.innerHTML = `
+          <span class="artwork-number">${num}.</span>
+          <div class="artwork-img-wrap">
+            <img src="${work.src}" alt="${work.title}" loading="lazy" />
+          </div>
+          <div class="artwork-info">
+            <span class="artwork-title">${work.title}</span>
+            <span class="artwork-meta">${meta}</span>
+          </div>
+        `;
+        card.addEventListener('click', () => openLightbox(work));
+        gridEl.appendChild(card);
+      });
+    }
+
+    renderGrid = renderGridFull;
+
+    // Initial render
+    renderGrid('selected');
+
+    // (Filter section uses pure CSS sticky — no JS needed)
+
+    // ═══ Hamburger Menu ═══
+    const hamburger = document.getElementById('hamburger');
+    const mobileNav = document.getElementById('mobileNav');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileNav.classList.toggle('open');
+    });
+  </script>
+</body>
+</html>

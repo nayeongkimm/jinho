@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jinho Kim — Artist</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Asul:wght@400;700&display=block" as="style" />
+  <link href="https://fonts.googleapis.com/css2?family=Asul:wght@400;700&display=block" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: 'Pretendard';
+      src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+      font-weight: 400; font-style: normal;
+    }
+
+    :root {
+      --font-en: 'Asul', Georgia, serif;
+      --font-ko: 'Pretendard', -apple-system, sans-serif;
+      --text: #1A1A1A;
+      --text-sec: #6B6560;
+      --text-muted: #A09A93;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { -webkit-font-smoothing: antialiased; }
+    body {
+      background: #FFFFFF;
+      color: var(--text);
+      font-family: var(--font-ko);
+      overflow: hidden;
+      height: 100vh;
+      cursor: grab;
+      user-select: none;
+    }
+    body.dragging { cursor: grabbing; }
+
+    /* Scene — perspective creates natural depth scaling */
+    .scene {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      perspective: 900px;
+      perspective-origin: 50% 50%;
+    }
+
+    /* Transparent square box — uniform spacing regardless of image ratio */
+    .card-box {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 500px; height: 500px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      overflow: hidden;
+      line-height: 0;
+    }
+    .card img {
+      display: block;
+      max-width: 500px;
+      max-height: 500px;
+      width: auto; height: auto;
+      pointer-events: none;
+    }
+
+    /* Header */
+    .header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 64px;
+      pointer-events: none;
+    }
+    .header-logo {
+      font-family: var(--font-en);
+      font-size: 20px;
+      color: var(--text); pointer-events: auto; text-decoration: none;
+    }
+    .header-nav {
+      display: flex; gap: 40px; align-items: center;
+      pointer-events: auto;
+    }
+    .header-nav a {
+      font-family: var(--font-en);
+      font-size: 14px; letter-spacing: 1.4px; text-transform: uppercase;
+      color: var(--text); text-decoration: none;
+      transition: color 0.3s;
+      position: relative; padding-bottom: 4px;
+    }
+    .header-nav a::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 1px;
+      background: var(--text);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+    .header-nav a:hover::after { transform: scaleX(1); }
+
+    .bottom-hints {
+      position: fixed; top: 50%; left: 0; right: 0; z-index: 1000;
+      display: flex; justify-content: space-between; padding: 0 40px;
+      pointer-events: none;
+      transform: translateY(-50%);
+    }
+    .hint {
+      font-family: var(--font-en);
+      font-size: 11px; font-weight: 400;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--text-muted);
+      opacity: 0; animation: fadeIn 1s ease 1.5s forwards;
+    }
+
+    .tooltip {
+      position: fixed; z-index: 2000; pointer-events: none;
+      background: rgba(41, 36, 31, 0.5);
+      padding: 2px 6px;
+      font-family: var(--font-ko); font-size: 12px; color: #FFFFFF;
+      opacity: 0; transition: opacity 0.15s ease;
+      white-space: nowrap;
+    }
+    .tooltip.visible { opacity: 1; }
+
+    /* ─── Hamburger Menu ─── */
+    .hamburger {
+      display: none;
+      pointer-events: auto;
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      position: relative;
+      padding: 0;
+      z-index: 1100;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 1.5px;
+      background: var(--text);
+      position: absolute;
+      left: 0;
+      transition: all 0.3s ease;
+    }
+    .hamburger span:nth-child(1) { top: 6px; }
+    .hamburger span:nth-child(2) { top: 11.5px; }
+    .hamburger span:nth-child(3) { top: 17px; }
+    .hamburger.open span:nth-child(1) {
+      top: 11.5px;
+      transform: rotate(45deg);
+    }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) {
+      top: 11.5px;
+      transform: rotate(-45deg);
+    }
+
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255, 255, 255, 0.95);
+      z-index: 1050;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 0 40px;
+      gap: 16px;
+    }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a {
+      font-family: var(--font-en);
+      font-size: 24px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: 2px;
+      transition: opacity 0.3s;
+    }
+    .mobile-nav a:hover { opacity: 0.5; }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* ─── Mobile ─── */
+    @media (max-width: 767px) {
+      .header {
+        padding: 0 24px;
+      }
+      .header-logo {
+        font-size: 17px;
+      }
+      .header-nav {
+        display: none;
+      }
+      .hamburger {
+        display: block;
+      }
+      .mobile-nav {
+        padding: 0 24px;
+      }
+      .bottom-hints {
+        top: auto;
+        bottom: 28px;
+        transform: none;
+        padding: 0 24px;
+      }
+      .card-box {
+        width: 280px; height: 280px;
+      }
+      .card img {
+        max-width: 280px;
+        max-height: 280px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="preview-homepage.html" class="header-logo">Jinho Kim</a>
+    <nav class="header-nav">
+      <a href="works.html">Works</a>
+      <a href="about.html">About</a>
+      <a href="shop.html">Shop</a>
+    </nav>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <nav class="mobile-nav" id="mobileNav">
+    <a href="works.html">Works</a>
+    <a href="about.html">About</a>
+    <a href="shop.html">Shop</a>
+  </nav>
+
+  <div class="scene" id="scene"></div>
+
+  <div class="bottom-hints">
+    <span class="hint">Scroll to dive in ></span>
+    <span class="hint">< Drag to rotate</span>
+  </div>
+
+  <div class="tooltip" id="tooltip"></div>
+
+  <script>
+    // ═══════════════════════════════════════
+    // DATA
+    // ═══════════════════════════════════════
+    const ALL_WORKS = [
+      // 사랑비 시리즈 — 연도별 대표작 6개
+      { src: 'artworks/web/사랑비/사랑비 (2010).jpg', title: '사랑비', year: 2010 },
+      { src: 'artworks/web/사랑비/사랑비3 (2011).jpg', title: '사랑비3', year: 2011 },
+      { src: 'artworks/web/사랑비/사랑비 (2013).jpg', title: '사랑비', year: 2013 },
+      { src: 'artworks/web/사랑비/사랑비 (2015).jpg', title: '사랑비', year: 2015 },
+      { src: 'artworks/web/사랑비/사랑비52 50호 (2017).jpg', title: '사랑비52', year: 2017 },
+      { src: 'artworks/web/사랑비/사랑비61 50호 (2019).jpg', title: '사랑비61', year: 2019 },
+      { src: 'artworks/web/봄봄/이른 봄 8호 (2020).jpg', title: '이른 봄', year: 2020 },
+      { src: 'artworks/web/봄봄/꽃잎 끝에 걸린 봄날 10호 (2020).jpg', title: '꽃잎 끝에 걸린 봄날', year: 2020 },
+      { src: 'artworks/web/봄봄/아내의 공간 10호 (2020).jpg', title: '아내의 공간', year: 2020 },
+      { src: 'artworks/web/봄봄/바람에 날려온 봄 20호 (2020).jpg', title: '바람에 날려온 봄', year: 2020 },
+      { src: 'artworks/web/봄봄/기다림 20호 (2021).jpg', title: '기다림', year: 2021 },
+      { src: 'artworks/web/봄봄/봄봄 50호 (2021).jpg', title: '봄봄', year: 2021 },
+      { src: 'artworks/web/노닐다/봄봄 8호 (2022).jpg', title: '봄봄', year: 2022 },
+      { src: 'artworks/web/노닐다/봄봄2 10호 (2022).jpg', title: '봄봄2', year: 2022 },
+      { src: 'artworks/web/노닐다/봄봄4 40호 (2022).jpg', title: '봄봄4', year: 2022 },
+      { src: 'artworks/web/노닐다/봄봄5 10호 (2022).jpg', title: '봄봄5', year: 2022 },
+      { src: 'artworks/web/노닐다/노닐다 40호 (2023).jpg', title: '노닐다', year: 2023 },
+      { src: 'artworks/web/노닐다/노닐다3 10호 (2023).jpg', title: '노닐다3', year: 2023 },
+      { src: 'artworks/web/노닐다/봄 그림자 20호 (2023).jpg', title: '봄 그림자', year: 2023 },
+      { src: 'artworks/web/노닐다/봄봄6 40호 (2023).jpg', title: '봄봄6', year: 2023 },
+      { src: 'artworks/web/노닐다/봄봄7 10호 (2023).jpg', title: '봄봄7', year: 2023 },
+      { src: 'artworks/web/노닐다/봄봄8 20호 (2023).jpg', title: '봄봄8', year: 2023 },
+      { src: 'artworks/web/노닐다/봄봄9 20호 (2023).jpg', title: '봄봄9', year: 2023 },
+      { src: 'artworks/web/노닐다/흐름 20호 (2023).jpg', title: '흐름', year: 2023 },
+      { src: 'artworks/web/노닐다/노닐다4 20호 (2023).jpg', title: '노닐다4', year: 2023 },
+      { src: 'artworks/web/노닐다/노닐다5 50호 (2024).jpg', title: '노닐다5', year: 2024 },
+      { src: 'artworks/web/노닐다/노닐다7 50호 (2024).jpg', title: '노닐다7', year: 2024 },
+      { src: 'artworks/web/노닐다/봄날2 10호 (2024).jpg', title: '봄날2', year: 2024 },
+      { src: 'artworks/web/노닐다/봄날3 20호 (2024).jpg', title: '봄날3', year: 2024 },
+      { src: 'artworks/web/노닐다/열정 10호 (2024).jpg', title: '열정', year: 2024 },
+      { src: 'artworks/web/노닐다/노닐다10 6호 (2025).jpg', title: '노닐다10', year: 2025 },
+      { src: 'artworks/web/노닐다/노닐다11 6호 (2025).jpg', title: '노닐다11', year: 2025 },
+      { src: 'artworks/web/노닐다/노닐다13 6호 (2025).jpg', title: '노닐다13', year: 2025 },
+      { src: 'artworks/web/노닐다/노닐다14 6호 (2025).jpg', title: '노닐다14', year: 2025 },
+      { src: 'artworks/web/노닐다/노닐다15 50호 (2025).jpg', title: '노닐다15', year: 2025 },
+      { src: 'artworks/web/노닐다/노닐다17 50호 (2025).jpg', title: '노닐다17', year: 2025 },
+      { src: 'artworks/web/노닐다/노닐다18 10호 (2025).jpg', title: '노닐다18', year: 2025 },
+      { src: 'artworks/web/노닐다/노닐다9 6호 (2025).jpg', title: '노닐다9', year: 2025 },
+    ];
+
+    const TOTAL = ALL_WORKS.length;
+
+    // Uniform sizing (~70×88 area) with varied aspect ratios
+    // Render at high res (200px range), scale DOWN at start for sharpness when zooming
+    const SIZES = [
+      [168,210],[210,163],[170,214],[204,158],[163,204],
+      [179,224],[214,168],[168,210],[204,158],[170,214],
+      [163,204],[210,163],[176,218],[204,158],[168,210],
+      [214,168],[170,214],[163,204],[204,158],[176,218],
+      [168,210],[210,163],[170,214],[204,158],[163,204],
+      [179,224],[168,210],[214,168],[170,214],[204,158],
+      [163,204],[176,218],[210,163],[168,210],[170,214],
+      [204,158],[163,204],[214,168],
+    ];
+
+    // Interleave series first, then shuffle — prevents same-series clustering
+    const series = {};
+    ALL_WORKS.forEach(w => {
+      const key = w.src.split('/')[1]; // folder name = series
+      if (!series[key]) series[key] = [];
+      series[key].push({ ...w });
+    });
+    const buckets = Object.values(series);
+    const images = [];
+    let maxLen = Math.max(...buckets.map(b => b.length));
+    for (let i = 0; i < maxLen; i++) {
+      for (const b of buckets) {
+        if (i < b.length) images.push(b[i]);
+      }
+    }
+    // Final shuffle with constraint: no two adjacent same-series
+    for (let i = images.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [images[i], images[j]] = [images[j], images[i]];
+    }
+
+    // ═══════════════════════════════════════
+    // FIBONACCI SPHERE — unit sphere points
+    // ═══════════════════════════════════════
+    const SPHERE_RADIUS = 350;
+    const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+    const spherePoints = [];
+
+    for (let i = 0; i < TOTAL; i++) {
+      // offset by 0.5 to avoid exact poles — no card stuck at center
+      const y = 1 - ((i + 0.5) / TOTAL) * 2;
+      const radiusAtY = Math.sqrt(1 - y * y);
+      const theta = goldenAngle * i;
+      spherePoints.push({
+        x: Math.cos(theta) * radiusAtY,
+        y: y,
+        z: Math.sin(theta) * radiusAtY,
+      });
+    }
+
+    // ═══════════════════════════════════════
+    // CREATE DOM CARDS
+    // ═══════════════════════════════════════
+    const sceneEl = document.getElementById('scene');
+    const tooltipEl = document.getElementById('tooltip');
+    const cards = [];
+
+    const BOX_SIZE = 500;
+
+    images.forEach((img, i) => {
+      const size = SIZES[i % SIZES.length];
+
+      // Outer box — 170×170 transparent, uniform spacing
+      const box = document.createElement('div');
+      box.className = 'card-box';
+
+      // Inner card — image determines its own size within 170px max
+      const el = document.createElement('div');
+      el.className = 'card';
+
+      const imgEl = document.createElement('img');
+      imgEl.src = img.src;
+      imgEl.alt = img.title || '';
+      imgEl.draggable = false;
+      el.appendChild(imgEl);
+
+      if (img.title) {
+        el.addEventListener('mouseenter', () => {
+          tooltipEl.textContent = `${img.title} (${img.year})`;
+          tooltipEl.classList.add('visible');
+        });
+        el.addEventListener('mouseleave', () => tooltipEl.classList.remove('visible'));
+        el.addEventListener('mousemove', (e) => {
+          tooltipEl.style.left = (e.clientX + 16) + 'px';
+          tooltipEl.style.top = (e.clientY - 10) + 'px';
+        });
+        el.style.cursor = 'pointer';
+      }
+
+      box.appendChild(el);
+      sceneEl.appendChild(box);
+      cards.push({ el: box, w: BOX_SIZE, h: BOX_SIZE, sphere: spherePoints[i] });
+    });
+
+    // ═══════════════════════════════════════
+    // STATE
+    // ═══════════════════════════════════════
+    let rotX = 0.2;       // radians
+    let rotY = 0;
+    let targetRotX = 0.2;
+    let targetRotY = 0;
+    let velX = 0, velY = 0;
+
+    let zoomScale = 0.2;       // start small for intro animation
+    let targetZoom = 0.2;      // hold at 0.2 initially, delay before blooming
+    const MIN_ZOOM = 0.5;
+    const MAX_ZOOM = 4.1;
+    const ZOOM_SENSITIVITY = 0.002;
+
+    // ═══════════════════════════════════════
+    // 3D ROTATION (JS) — cards always face camera
+    // ═══════════════════════════════════════
+    function rotatePoint(p, rx, ry) {
+      // Y-axis rotation
+      const x1 = p.x * Math.cos(ry) - p.z * Math.sin(ry);
+      const z1 = p.x * Math.sin(ry) + p.z * Math.cos(ry);
+      // X-axis rotation
+      const y1 = p.y * Math.cos(rx) - z1 * Math.sin(rx);
+      const z2 = p.y * Math.sin(rx) + z1 * Math.cos(rx);
+      return { x: x1, y: y1, z: z2 };
+    }
+
+    // ═══════════════════════════════════════
+    // RENDER
+    // Hybrid approach:
+    //   - JS computes rotated 3D positions
+    //   - CSS translate3d(x, y, z) + perspective does depth scaling
+    //   - Cards always face forward (no rotation on cards)
+    // ═══════════════════════════════════════
+    function render() {
+      // Smooth interpolation
+      rotX += (targetRotX - rotX) * 0.08;
+      rotY += (targetRotY - rotY) * 0.08;
+      // Slower lerp during intro (0.2→0.5), normal speed after
+      const zoomLerp = zoomScale < targetZoom * 0.95 ? 0.02 : 0.08;
+      zoomScale += (targetZoom - zoomScale) * zoomLerp;
+
+      // Inertia
+      if (!isDragging) {
+        velX *= 0.95;
+        velY *= 0.95;
+        targetRotX += velX;
+        targetRotY += velY;
+      }
+
+      const radius = SPHERE_RADIUS * zoomScale;
+
+      // Compute rotated positions & sort by z for proper z-index
+      const projected = [];
+      cards.forEach((card, i) => {
+        const sp = card.sphere;
+        const p3d = { x: sp.x * radius, y: sp.y * radius, z: sp.z * radius };
+        const rot = rotatePoint(p3d, rotX, rotY);
+        projected.push({ card, rot });
+      });
+
+      // Sort back to front
+      projected.sort((a, b) => a.rot.z - b.rot.z);
+
+      projected.forEach((p, sortIdx) => {
+        const el = p.card.el;
+        const { x, y, z } = p.rot;
+        const hw = p.card.w / 2;
+        const hh = p.card.h / 2;
+
+        // translate3d for 3D position, scale for zoom-proportional card sizing
+        // CSS perspective adds depth effect, scale makes cards grow when zooming in
+        // Start at 0.33 (renders ~200px cards as ~66px), zoom to full res
+        const BASE_SCALE = 0.11; // 500px * 0.11 ≈ 55px at start, sharp when zoomed
+        const cardScale = BASE_SCALE * (zoomScale / MIN_ZOOM);
+        el.style.transform = `translate3d(${x - hw}px, ${y - hh}px, ${z}px) scale(${cardScale})`;
+        el.style.zIndex = sortIdx;
+      });
+
+      requestAnimationFrame(render);
+    }
+
+    // ═══════════════════════════════════════
+    // DRAG TO ROTATE
+    // ═══════════════════════════════════════
+    let isDragging = false;
+    let prevMouse = { x: 0, y: 0 };
+
+    sceneEl.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      document.body.classList.add('dragging');
+      prevMouse = { x: e.clientX, y: e.clientY };
+      velX = 0; velY = 0;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - prevMouse.x;
+      const dy = e.clientY - prevMouse.y;
+      velX = dy * 0.007;
+      velY = dx * 0.007;
+      targetRotX += velX;
+      targetRotY += velY;
+      prevMouse = { x: e.clientX, y: e.clientY };
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+      document.body.classList.remove('dragging');
+    });
+
+    // ═══════════════════════════════════════
+    // SCROLL → ZOOM
+    // ═══════════════════════════════════════
+    window.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      targetZoom -= e.deltaY * ZOOM_SENSITIVITY; // inverted: scroll down = zoom in
+      targetZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, targetZoom));
+    }, { passive: false });
+
+    // ═══════════════════════════════════════
+    // TOUCH: 1 finger = rotate, 2 finger = pinch zoom
+    // ═══════════════════════════════════════
+    let touchPrev = { x: 0, y: 0 };
+    let pinchStartDist = 0;
+    let pinchStartZoom = 0;
+
+    window.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        touchPrev = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        velX = 0; velY = 0;
+      } else if (e.touches.length === 2) {
+        isDragging = false;
+        const t0 = e.touches[0], t1 = e.touches[1];
+        pinchStartDist = Math.hypot(t1.clientX - t0.clientX, t1.clientY - t0.clientY);
+        pinchStartZoom = targetZoom;
+      }
+    });
+
+    window.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      if (e.touches.length === 1 && isDragging) {
+        const t = e.touches[0];
+        const dx = t.clientX - touchPrev.x;
+        const dy = t.clientY - touchPrev.y;
+        velX = dy * 0.007;
+        velY = dx * 0.007;
+        targetRotX += velX;
+        targetRotY += velY;
+        touchPrev = { x: t.clientX, y: t.clientY };
+      } else if (e.touches.length === 2) {
+        const t0 = e.touches[0], t1 = e.touches[1];
+        const dist = Math.hypot(t1.clientX - t0.clientX, t1.clientY - t0.clientY);
+        const ratio = dist / pinchStartDist;
+        targetZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, pinchStartZoom * ratio));
+      }
+    }, { passive: false });
+
+    window.addEventListener('touchend', () => { isDragging = false; });
+
+    // ═══════════════════════════════════════
+    // START — hold at 0.2 for image loading, then bloom
+    // ═══════════════════════════════════════
+    render();
+
+    // Wait 1.2s at compact state, then animate to 0.5
+    setTimeout(() => {
+      targetZoom = 0.5;
+    }, 1200);
+
+    // ═══════════════════════════════════════
+    // HAMBURGER MENU
+    // ═══════════════════════════════════════
+    const hamburger = document.getElementById('hamburger');
+    const mobileNav = document.getElementById('mobileNav');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileNav.classList.toggle('open');
+    });
+  </script>
+</body>
+</html>

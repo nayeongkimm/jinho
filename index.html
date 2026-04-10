@@ -143,22 +143,20 @@
     }
     .hamburger span {
       display: block;
-      width: 24px;
+      width: 20px;
       height: 1.5px;
       background: var(--text);
       position: absolute;
-      left: 0;
+      left: 2px;
       transition: all 0.3s ease;
     }
-    .hamburger span:nth-child(1) { top: 6px; }
-    .hamburger span:nth-child(2) { top: 11.5px; }
-    .hamburger span:nth-child(3) { top: 17px; }
+    .hamburger span:nth-child(1) { top: 8px; }
+    .hamburger span:nth-child(2) { top: 15px; }
     .hamburger.open span:nth-child(1) {
       top: 11.5px;
       transform: rotate(45deg);
     }
-    .hamburger.open span:nth-child(2) { opacity: 0; }
-    .hamburger.open span:nth-child(3) {
+    .hamburger.open span:nth-child(2) {
       top: 11.5px;
       transform: rotate(-45deg);
     }
@@ -227,7 +225,7 @@
       <a href="shop.html">Shop</a>
     </nav>
     <button class="hamburger" id="hamburger" aria-label="Menu">
-      <span></span><span></span><span></span>
+      <span></span><span></span>
     </button>
   </header>
 
@@ -355,9 +353,11 @@
     const cards = [];
 
     function updateSizes() {
-      const mobile = window.innerWidth < 768;
-      SPHERE_RADIUS = mobile ? 180 : 350;
-      BOX_SIZE = mobile ? 280 : 500;
+      const w = window.innerWidth;
+      // Smooth scaling: linearly interpolate between 360px and 1200px
+      const t = Math.max(0, Math.min(1, (w - 360) / (1200 - 360)));
+      SPHERE_RADIUS = Math.round(273 + t * 77);    // 273 ~ 350
+      BOX_SIZE = Math.round(408 + t * 92);          // 408 ~ 500
       // Sync JS card dimensions + DOM inline styles
       cards.forEach(c => {
         c.w = BOX_SIZE;

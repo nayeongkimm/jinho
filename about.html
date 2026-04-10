@@ -131,7 +131,7 @@
     .mobile-nav.open { display: flex; }
     .mobile-nav a {
       font-family: var(--font-en);
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 700;
       text-transform: uppercase;
       color: var(--text-primary);
@@ -144,7 +144,7 @@
     /* ─── Main Content ─── */
     .main {
       padding: 0 80px;
-      max-width: 1440px;
+      max-width: 1060px;
       margin: 0 auto;
     }
 
@@ -152,34 +152,39 @@
     .about-section {
       margin-top: 100px;
     }
-    .about-title {
+    .section-title {
       font-family: var(--font-en);
-      font-size: 48px;
+      font-size: 28px;
       font-weight: 400;
       color: var(--text-primary);
-      margin-bottom: 60px;
+      margin-bottom: 48px;
     }
     .about-content {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
+      grid-template-columns: 4fr 7fr;
+      gap: 36px;
+      align-items: stretch;
     }
     .about-text {
       font-family: var(--font-ko);
       font-size: 15px;
-      line-height: 1.8;
+      line-height: 1.9;
       color: var(--text-secondary);
     }
     .about-text p + p {
-      margin-top: 24px;
+      margin-top: 10px;
     }
     .about-image {
       width: 100%;
-      aspect-ratio: 4 / 5;
       background: #F5F2F0;
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+    .about-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     .about-image-placeholder {
       font-family: var(--font-en);
@@ -188,22 +193,209 @@
       letter-spacing: 1px;
     }
 
+    /* ─── Exhibition Section ─── */
+    .exhibition-section {
+      margin-top: 160px;
+    }
+    .exhibition-tabs {
+      display: flex;
+      gap: 32px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid #E8E4E0;
+      padding-bottom: 0;
+    }
+    .exhibition-tab {
+      font-family: var(--font-ko);
+      font-size: 15px;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0 0 12px 0;
+      position: relative;
+      transition: color 0.3s;
+      white-space: nowrap;
+    }
+    .exhibition-tab::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: -1px;
+      height: 2px;
+      background: var(--text-primary);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+    .exhibition-tab:hover { color: var(--text-primary); }
+    .exhibition-tab.active {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+    .exhibition-tab.active::after { transform: scaleX(1); }
+
+    .exhibition-list {
+      display: none;
+    }
+    .exhibition-list.active {
+      display: block;
+    }
+
+    /* Accordion */
+    .accordion-item {
+      border-bottom: 1px solid #F0EDEA;
+    }
+    .accordion-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      cursor: pointer;
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+    }
+    .accordion-year {
+      font-family: var(--font-en);
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text-primary);
+    }
+    .accordion-arrow {
+      width: 16px;
+      height: 16px;
+      transition: transform 0.3s ease;
+      color: var(--text-muted);
+    }
+    .accordion-item.open .accordion-arrow {
+      transform: rotate(180deg);
+    }
+    .accordion-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease;
+    }
+    .accordion-item.open .accordion-body {
+      max-height: 2000px;
+    }
+    .accordion-content {
+      padding: 0 0 20px 0;
+    }
+    .accordion-content li {
+      font-family: var(--font-ko);
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--text-secondary);
+      list-style: none;
+      padding-left: 0;
+    }
+
+    /* ─── Education Section ─── */
+    .education-section {
+      margin-top: 160px;
+    }
+    .education-content {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .education-item {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+    }
+    .education-label {
+      font-family: var(--font-en);
+      font-size: 15px;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      min-width: 80px;
+      flex-shrink: 0;
+    }
+    .education-value {
+      font-family: var(--font-ko);
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+    }
+
+    /* ─── Scattered Gallery ─── */
+    .scattered-gallery {
+      position: relative;
+      width: 100%;
+      max-width: 1440px;
+      margin: 200px auto 0;
+      padding: 0 80px;
+    }
+    .scattered-row {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 120px;
+    }
+    .scattered-row:last-child {
+      margin-bottom: 0;
+    }
+    .scattered-row img {
+      display: block;
+      object-fit: cover;
+    }
+    /* Row 1: one image right-center, one far right */
+    .scattered-row.row-1 {
+      justify-content: flex-end;
+      gap: 40px;
+      padding-right: 5%;
+    }
+    .scattered-row.row-1 img:first-child {
+      width: 22%;
+      margin-top: 60px;
+    }
+    .scattered-row.row-1 img:last-child {
+      width: 30%;
+    }
+    /* Row 2: one image far left */
+    .scattered-row.row-2 {
+      justify-content: flex-start;
+      padding-left: 3%;
+    }
+    .scattered-row.row-2 img {
+      width: 25%;
+    }
+    /* Row 3: one center, one right-ish with overlap feel */
+    .scattered-row.row-3 {
+      justify-content: center;
+      gap: 80px;
+      padding-left: 10%;
+    }
+    .scattered-row.row-3 img:first-child {
+      width: 28%;
+    }
+    .scattered-row.row-3 img:last-child {
+      width: 20%;
+      margin-top: 100px;
+    }
+    /* Row 4: center */
+    .scattered-row.row-4 {
+      justify-content: center;
+    }
+    .scattered-row.row-4 img {
+      width: 26%;
+    }
+
     /* ─── Contact + Footer Wrap ─── */
     .contact-footer-wrap {
-      background: #FAFAF7;
-      margin-top: 200px;
+      background: none;
+      margin-top: 160px;
     }
 
     /* ─── Contact Section ─── */
     .contact-section {
-      padding: 80px 40px 0;
-      min-height: 374px;
-      max-width: 1440px;
+      padding: 0 80px;
+      min-height: auto;
+      max-width: 1060px;
       margin: 0 auto;
     }
     .contact-title {
       font-family: var(--font-en);
-      font-size: 48px;
+      font-size: 28px;
       font-weight: 400;
       color: var(--text-primary);
       margin-bottom: 16px;
@@ -247,9 +439,12 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0 40px;
+      padding: 0 80px;
       height: 64px;
-      margin-top: 50px;
+      margin-top: 300px;
+      max-width: 1060px;
+      margin-left: auto;
+      margin-right: auto;
     }
     .footer p {
       font-family: var(--font-en);
@@ -270,12 +465,12 @@
       .about-content {
         gap: 48px;
       }
-      .about-title,
-      .contact-title {
-        font-size: 36px;
+      .exhibition-section,
+      .education-section {
+        margin-top: 120px;
       }
       .contact-footer-wrap {
-        margin-top: 140px;
+        margin-top: 120px;
       }
     }
 
@@ -302,23 +497,70 @@
       .about-section {
         margin-top: 30px;
       }
-      .about-title,
-      .contact-title {
-        font-size: 32px;
+      .section-title {
+        font-size: 24px;
+        margin-bottom: 32px;
       }
       .about-content {
         grid-template-columns: 1fr;
-        gap: 40px;
+        gap: 32px;
       }
       .about-image {
         order: -1;
         aspect-ratio: 16 / 9;
       }
-      .contact-footer-wrap {
+      .exhibition-section,
+      .education-section {
+        margin-top: 80px;
+      }
+      .scattered-gallery {
+        padding: 0 24px;
         margin-top: 100px;
       }
+      .scattered-row {
+        margin-bottom: 60px;
+      }
+      .scattered-row.row-1 img:first-child,
+      .scattered-row.row-2 img,
+      .scattered-row.row-4 img {
+        width: 55%;
+      }
+      .scattered-row.row-1 img:last-child {
+        width: 40%;
+      }
+      .scattered-row.row-3 img:first-child {
+        width: 50%;
+      }
+      .scattered-row.row-3 img:last-child {
+        width: 40%;
+        margin-top: 40px;
+      }
+      .scattered-row.row-3 {
+        gap: 24px;
+        padding-left: 0;
+      }
+      .exhibition-tabs {
+        gap: 20px;
+        margin-bottom: 24px;
+      }
+      .exhibition-tab {
+        font-size: 14px;
+      }
+      .accordion-year {
+        font-size: 16px;
+      }
+      .accordion-content li {
+        font-size: 13px;
+      }
+      .contact-footer-wrap {
+        margin-top: 80px;
+      }
       .contact-section {
-        padding: 48px 24px 0;
+        padding: 0 24px;
+        min-height: auto;
+      }
+      .contact-title {
+        font-size: 28px;
       }
       .contact-subtitle {
         margin-bottom: 32px;
@@ -353,17 +595,52 @@
 
   <!-- Main -->
   <main class="main">
+
     <!-- About Section -->
     <section class="about-section">
-      <h1 class="about-title">About</h1>
+      <h1 class="section-title">About</h1>
       <div class="about-content">
-        <div class="about-text">
-          <p>김진호는 자연과 감정의 경계에서 작업하는 한국의 화가입니다. 봄의 따뜻함, 바람의 흐름, 사랑의 여운 등 일상 속 순간들을 캔버스에 담아냅니다.</p>
-          <p>2010년부터 시작된 '사랑비' 시리즈를 통해 사랑이라는 감정을 비로 형상화하였고, 이후 '봄봄'과 '노닐다' 시리즈에서는 자연 속에서 느끼는 평온함과 자유로움을 표현해왔습니다.</p>
-          <p>그의 작품은 부드러운 색채와 감성적인 붓질로 관람자에게 편안한 여운을 남깁니다.</p>
-        </div>
         <div class="about-image">
           <span class="about-image-placeholder">Artist Photo</span>
+        </div>
+        <div class="about-text">
+          <p>김진호는 자연 속 생명의 기운을 선과 색으로 표현하는 작가이다.</p>
+          <p>어린 시절 시골에서 자연과 함께한 경험은 그의 작품 세계의 뿌리가 되었다. 작가는 깊고 푸른 바다의 청색, 피가 끓어오르는 듯한 적색, 싱그러운 풀잎의 녹색으로 자연이 품고 있는 생명력과 희망을 담아낸다. 초기 사랑비 시리즈에서 그는 바람에 흔들리는 양귀비를 통해 나약하지만 저마다의 꽃을 피우는 인간의 모습을 그렸다. 구상과 비구상의 경계를 오가던 이 시기를 지나, 2020년 봄봄 시리즈에서는 형상에 대한 고집을 내려놓고 색채와 조형 자체에 집중하기 시작했다. 그리고 노닐다 시리즈에 이르러 작업은 본격적인 추상으로 나아간다. 자연 속을 거닐듯, 선과 색이 화면 위에서 자유롭게 노닌다.</p>
+          <p>한국 단색화의 정신을 이어받으면서도 서양 추상표현주의의 역동성을 수용한 그의 작업은, 기하학적 질서와 자유로운 색채 사이를 오가며 자연과 인간, 고요와 격정 사이의 긴장을 탐구한다.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Exhibition Section -->
+    <section class="exhibition-section">
+      <h2 class="section-title">Exhibitions</h2>
+      <div class="exhibition-tabs">
+        <button class="exhibition-tab active" data-tab="solo">개인전 및 부스전</button>
+        <button class="exhibition-tab" data-tab="group">단체전 및 기획, 초대전</button>
+      </div>
+
+      <!-- 개인전 및 부스전 -->
+      <div class="exhibition-list active" id="tab-solo"></div>
+
+      <!-- 단체전 및 기획, 초대전 -->
+      <div class="exhibition-list" id="tab-group"></div>
+    </section>
+
+    <!-- Education Section -->
+    <section class="education-section">
+      <h2 class="section-title">Education</h2>
+      <div class="education-content">
+        <div class="education-item">
+          <span class="education-label">Education</span>
+          <span class="education-value">경북대학교 예술대학 및 동 교육대학원 졸업</span>
+        </div>
+        <div class="education-item">
+          <span class="education-label">Affiliation</span>
+          <span class="education-value">한국미협, 울산미협, 표상회</span>
+        </div>
+        <div class="education-item">
+          <span class="education-label">Current</span>
+          <span class="education-value">현대청운중학교</span>
         </div>
       </div>
     </section>
@@ -387,12 +664,275 @@
       </div>
     </section>
     <footer class="footer">
-      <p>© 2026 Jinho Kim, All rights reserved</p>
+      <p>&copy; 2026 Jinho Kim, All rights reserved</p>
       <p>Designed by Nayeong Kim</p>
     </footer>
   </div>
 
   <script>
+    // ═══════════════════════════════════════
+    // EXHIBITION DATA
+    // ═══════════════════════════════════════
+    const SOLO_DATA = {
+      2023: ['5회 개인전 — 확장전 (한빛갤러리, 울산)'],
+      2020: ['4회 개인전 — 기억의 공간展 (한빛갤러리, 울산)'],
+      2014: ['3회 개인전 (울산, 한빛갤러리)', '부스전 (현대예술관, 울산)'],
+      2011: ['부스전 (문화예술회관, 대구)'],
+      2008: ['2회 개인전 (울산, ck갤러리)'],
+      2005: ['1회 개인전 (울산, 현대아트갤러리)'],
+    };
+
+    const GROUP_DATA = {
+      2025: [
+        '소요유전 (꽃마루갤러리, 울산시교육청)',
+        '표상회 정기전',
+        '표상회 소품전 (수성문화원)',
+      ],
+      2024: [
+        '표상회 정기전',
+        '표상회 소품전',
+      ],
+      2023: [
+        '5회 개인전 (한빛갤러리, 울산)',
+        '표상회 정기전',
+        '표상회 소품전',
+      ],
+      2022: [
+        '표상회 5월의 선물전 (디아트갤러리, 대구)',
+        '봄날을 걷다 (무닉갤러리 기획 초대전, 대구)',
+      ],
+      2021: ['표상회 정기전 (봉산문화회관, 대구)'],
+      2020: [
+        '표상회 패션콜라보전 (벡스코, 대구)',
+        '4회 개인전 (한빛갤러리, 울산)',
+      ],
+      2019: [
+        '표상회 정기전 (문화예술회관, 대구)',
+        '표상회 초대전 (웃는얼굴아트센터, 대구)',
+      ],
+      2018: [
+        '표상회 정기전 (문화예술회관, 대구)',
+        '표상회 소품전 (달성군청 참꽃갤러리, 대구)',
+      ],
+      2017: [
+        '표상회 소품전 (혼다아트라운지, 대구)',
+        '울산·제주 미술교류전 (문화예술회관, 울산)',
+        '울산중견작가전 (가다갤러리기획, 울산)',
+        '표상회 정기전 (문화예술회관, 대구)',
+      ],
+      2016: [
+        '표상회 정기전 (문화예술회관, 대구)',
+        '가다미니아트페어 (가다갤러리, 울산)',
+        '12인의 모색전 (가다갤러리 기획, 울산)',
+        '이화에 월백하고전 (가암갤러리 봄기획, 청도)',
+        '봄봄봄전 (가암갤러리 신년기획, 청도)',
+        '구상과 추상의 아우름전 (가다갤러리 신년기획, 울산)',
+      ],
+      2015: [
+        '표상회 소품전 (비투갤러리, 대구)',
+        '선, 색, 면 전 (한빛갤러리 기획, 울산)',
+        '표상회, 익산미협 교류전 (대구, 문화예술회관)',
+      ],
+      2014: [
+        '한국구상미술 초대전 (울산, 문화예술회관)',
+        '표상회 정기전 (대구, 문화예술회관)',
+        '표상회 소품전 (대구, S&G갤러리)',
+      ],
+      2013: [
+        '현대미술에서의 사람전 II (울산, 문화예술회관)',
+        '표상회 소품전 (대구, DGB갤러리)',
+        '표상회 정기전 (대구, 문화예술회관)',
+      ],
+      2012: [
+        '새봄맞이 내안의 공간 기획전 (울산, 시청갤러리)',
+        'S&G개관기념 소품전 (대구, S&G갤러리)',
+        '한·중 교류전 (울산, 문화예술회관)',
+        '표상회 정기전 (대구, S&G갤러리)',
+        '현대미술에서의 사람전 (울산, 문화예술회관)',
+      ],
+      2011: [
+        '표상회 부스전 (대구, 문화예술회관)',
+        '표상회 소품전 (대구, DGB갤러리)',
+        '울산인물작가회전 (울산, 문화예술회관)',
+      ],
+      2010: [
+        '표상회 정기전 (대구, 문화예술회관)',
+        '울산예술발전기금마련전 (울산, 문화예술회관)',
+        '울산인물작가회전 (울산, ck갤러리)',
+      ],
+      2009: [
+        'ck갤러리 개관기념 초대전 (울산, ck갤러리)',
+        '울산인물작가회전 (울산, 갤러리H)',
+        '표상회 정기전 (대구, 문화예술회관)',
+        '2008 2회 개인전 (울산, ck갤러리)',
+        '네사람 동행전 (울산, 갤러리H)',
+        '울산인물작가회전 (울산, 갤러리H)',
+        '표상회 정기전 (대구, 문화예술회관)',
+      ],
+      2008: [
+        '표상회 정기전 (대구, 문화예술회관)',
+        '표상회 소품전 (대구, DGB갤러리)',
+      ],
+      2007: [
+        '구상회화제 (대구, 시민회관)',
+        '표상회 정기전 (대구, 문화예술회관)',
+        '표상회 소품전 (울산, 갤러리쁘라도)',
+        '울산구상작가회 100호전 (울산, 문화예술회관)',
+        '1세기전 (대구, 문화예술회관)',
+        '아름다운 인체여행 누드전 (울산, 갤러리H)',
+      ],
+      2006: [
+        '울산구상작가회 200호전 (울산, 문화예술회관)',
+        '울산인물작가회전 (울산, 갤러리H)',
+        '표상회 정기전 (대구, 문화예술회관)',
+        '표상회 소품전 (대구, 대백프라자갤러리)',
+      ],
+      2005: [
+        '1회 개인전 (울산, 현대아트갤러리)',
+        '대한민국 국제환경미술 엑스포 (서울, 코엑스컨벤션홀)',
+        '울산인물작가회 창립전 (울산, 갤러리H)',
+        '청년작가회 테마전 (울산, 한마음갤러리)',
+        '울산, 포항, 경주 구상작가회 크로스전 (울산, 문화예술회관)',
+        '울산, 부산, 창원 청년작가 크로스전 (울산, 문화예술회관)',
+        '1세기전 (대구, 문화예술회관)',
+        '표상회 정기전 (대구, 문화예술회관)',
+        '울산구상작가회 정기전 (울산, 문화예술회관)',
+      ],
+      2004: [
+        '전시장 가는 길 (울산, 문화예술회관 상설기획)',
+        '청년작가회 릴레이전 (울산, 한마음갤러리)',
+        '1세기전 (대구, 문화예술회관)',
+        '표상회 정기전 (대구, 문화예술회관)',
+        '표상회 소품전 (대구, 시민회관)',
+        '울산구상작가회 정기전 (울산, 한마음갤러리)',
+      ],
+      2003: [
+        '표상회 정기전 (대구, 문화예술회관)',
+        '표상회 소품전 (포항, 작은행복갤러리)',
+        '울산구상작가회 정기전 (울산, 현대아트갤러리)',
+      ],
+      2002: [
+        '울산의 태화강 일백리전 (울산, 문화예술회관)',
+        '울산문화예술회관 4전시장 개관기념전 (울산, 문화예술회관)',
+        '남부지역 구상회화제 (울산, 문화예술회관)',
+        '울산구상작가회 정기전 (울산, 현대아트갤러리)',
+        '표상회 소품전 (대구, 갤러리쁘라도)',
+        '표상회 정기전 (대구, 문화예술회관)',
+      ],
+      2001: [
+        '아름다운 자연, 이미지전 (울산, 문화예술회관)',
+        '울산의 산하 연작전 (울산, 문화예술회관)',
+        '도자기 그림전 (대구, 칠곡동아갤러리)',
+        '표상회 정기전 (대구, 문화예술회관)',
+      ],
+      2000: [
+        '가창성당 건립 기금전 (대구, 대백프라자갤러리)',
+        '중·남부 7개 시·도 미술단체교류전 (광주, 대구, 울산)',
+        '대왕암에서 간절곶까지전 (울산, 현대예술관)',
+        '새천년 청년작가초대전 (부산 타워갤러리, 울산 현대아트갤러리)',
+        '울산구상작가회 창립전 (울산, 현대아트갤러리)',
+        '2000 울산, 시각예술전 (울산, 문화예술회관)',
+        '표상회 정기전 (대구, 문화예술회관)',
+        '표상회 소품전 (대구, 대백프라자갤러리)',
+      ],
+      1999: [
+        '표상회 울산순회전 (울산, 문화예술회관)',
+        '표상회 소품전 (대구, 동아갤러리)',
+        '울산청년작가회 초대전 (부산, 갤러리메사)',
+      ],
+      1998: [
+        '영·호남 청년작가 교류전 (울산, 현대예술관)',
+        '표상회 정기전 (대구, 문화예술회관)',
+        '표상회 소품전 (대구, 대구은행갤러리)',
+        '울산청년작가회전 (울산, 현대예술관)',
+      ],
+      1997: [
+        '1990년대 울산미술 단면전 (울산, 아트리움 갤러리)',
+        '표상회 정기전 (대구, 문화예술회관)',
+        '울산청년작가회전 (울산, 한마음갤러리)',
+      ],
+      1996: [
+        '표상회 정기전 (대구, 문화예술회관)',
+        '표상회 소품전 (대구, 수성동아갤러리)',
+        '울산청년작가회전 (울산, 한마음갤러리)',
+      ],
+      1995: [
+        '표상회 정기전 (대구, 문화예술회관)',
+        '표상회 소품전 (대구, 동아미술관)',
+      ],
+      1994: [
+        '대구·포항 청년작가초대전 (대구, 포항 대백갤러리)',
+        '표상회정기전 (대구, 대백프라자갤러리)',
+        '표상회 소품전 (대구, 대백프라자갤러리)',
+      ],
+      1993: [
+        '신세대기획전 (대구, 단공갤러리)',
+        '표상회 일본 초대전 (일본, 도요하시 조일화랑)',
+        '표상회 소품전 (대구, 벽아미술관. 에스갤러리)',
+        '한국청년구상작가회전 (대구, 벽아미술관)',
+      ],
+      1992: [
+        '표상회 창립전 (대구, 동아갤러리)',
+        '표상회 소품전 (대구, 앞산화랑)',
+        '한국청년구상작가회전 (서울, 청학미술관)',
+      ],
+      1991: [
+        'Independent전 (과천, 국립현대미술관)',
+        '전국신진작가초대전 (서울, 청년미술관)',
+      ],
+    };
+
+    // ═══════════════════════════════════════
+    // RENDER ACCORDION
+    // ═══════════════════════════════════════
+    function renderAccordion(containerId, data) {
+      const container = document.getElementById(containerId);
+      const years = Object.keys(data).sort((a, b) => b - a);
+      let html = '';
+
+      years.forEach(year => {
+        const items = data[year];
+        html += `
+          <div class="accordion-item open">
+            <button class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+              <span class="accordion-year">${year}</span>
+              <svg class="accordion-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                ${items.map(item => `<li>${item}</li>`).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    renderAccordion('tab-solo', SOLO_DATA);
+    renderAccordion('tab-group', GROUP_DATA);
+
+    // ═══════════════════════════════════════
+    // EXHIBITION TABS
+    // ═══════════════════════════════════════
+    const exTabs = document.querySelectorAll('.exhibition-tab');
+    const exLists = document.querySelectorAll('.exhibition-list');
+
+    exTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        exTabs.forEach(t => t.classList.remove('active'));
+        exLists.forEach(l => l.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ═══════════════════════════════════════
+    // HAMBURGER MENU
+    // ═══════════════════════════════════════
     const hamburger = document.getElementById('hamburger');
     const mobileNav = document.getElementById('mobileNav');
     hamburger.addEventListener('click', () => {

@@ -131,7 +131,7 @@
     .mobile-nav.open { display: flex; }
     .mobile-nav a {
       font-family: var(--font-en);
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 700;
       text-transform: uppercase;
       color: var(--text-primary);
@@ -185,11 +185,13 @@
       transform: scaleX(0);
       transition: transform 0.3s ease;
     }
-    .filter-tab:hover::after { transform: scaleX(1); }
+    .filter-tab:hover:not(.active)::after { transform: scaleX(1); }
     .filter-tab.active {
       font-family: var(--font-en);
       color: var(--text-primary);
+      font-weight: 700;
     }
+    .filter-tab.active::after { transform: scaleX(0); }
     .filter-tab:not(.active) {
       font-family: var(--font-en), var(--font-ko);
     }
@@ -305,19 +307,19 @@
     /* ─── Contact + Footer Wrap ─── */
     .contact-footer-wrap {
       background: #FAFAF7;
-      margin-top: 200px;
+      margin-top: 300px;
     }
 
     /* ─── Contact Section ─── */
     .contact-section {
       padding: 80px 40px 0;
-      min-height: 374px;
+      min-height: 360px;
       max-width: 1440px;
       margin: 0 auto;
     }
     .contact-title {
       font-family: var(--font-en);
-      font-size: 48px;
+      font-size: 28px;
       font-weight: 400;
       color: var(--text-primary);
       margin-bottom: 16px;
@@ -363,7 +365,7 @@
       align-items: center;
       padding: 0 40px;
       height: 64px;
-      margin-top: 50px;
+      margin-top: 0;
     }
     .footer p {
       font-family: var(--font-en);
@@ -435,20 +437,21 @@
         font-size: 10px;
       }
       .contact-footer-wrap {
-        margin-top: 100px;
+        margin-top: 200px;
       }
       .contact-section {
         padding: 48px 24px 0;
+        min-height: 280px;
       }
       .contact-title {
-        font-size: 32px;
+        font-size: 28px;
       }
       .contact-subtitle {
         margin-bottom: 32px;
       }
       .footer {
         padding: 0 24px;
-        margin-top: 40px;
+        margin-top: 0;
       }
       .lightbox-img-area {
         padding: 24px 24px 0;
@@ -484,11 +487,11 @@
   <main class="main">
     <div class="filter-section">
       <div class="filter-tabs">
-        <button class="filter-tab active" data-filter="selected">Selected Works (10)</button>
-        <button class="filter-tab" data-filter="노닐다">노닐다 (26)</button>
-        <button class="filter-tab" data-filter="봄봄">봄봄 (6)</button>
-        <button class="filter-tab" data-filter="사랑비">사랑비 (11)</button>
-        <button class="filter-tab" data-filter="all">All (43)</button>
+        <button class="filter-tab active" data-filter="selected">Selected Works</button>
+        <button class="filter-tab" data-filter="노닐다">노닐다</button>
+        <button class="filter-tab" data-filter="봄봄">봄봄</button>
+        <button class="filter-tab" data-filter="사랑비">사랑비</button>
+        <button class="filter-tab" data-filter="all">All</button>
       </div>
     </div>
 
@@ -542,12 +545,19 @@
       { src: 'artworks/web/sarangbi/sarangbi-2014.jpg', title: '사랑비', year: 2014, size: '', series: '사랑비' },
       { src: 'artworks/web/sarangbi/sarangbi-2015.jpg', title: '사랑비', year: 2015, size: '', series: '사랑비' },
       { src: 'artworks/web/sarangbi/sarangbi-6ho-2015.jpg', title: '사랑비', year: 2015, size: '6호', series: '사랑비' },
+      { src: 'artworks/web/sarangbi/sarangbi47-2016.jpg', title: '사랑비47', year: 2016, size: '', series: '사랑비' },
+      { src: 'artworks/web/sarangbi/sarangbi50-2016.jpg', title: '사랑비50', year: 2016, size: '', series: '사랑비' },
       { src: 'artworks/web/sarangbi/sarangbi52-2017.jpg', title: '사랑비52', year: 2017, size: '50호', series: '사랑비' },
+      { src: 'artworks/web/sarangbi/sarangbi53-2017.jpg', title: '사랑비53', year: 2017, size: '4호', series: '사랑비' },
+      { src: 'artworks/web/sarangbi/sarangbi54-2017.jpg', title: '사랑비54', year: 2017, size: '4호', series: '사랑비' },
+      { src: 'artworks/web/sarangbi/sarangbi59-2018.jpg', title: '사랑비59', year: 2018, size: '10호', series: '사랑비' },
       { src: 'artworks/web/sarangbi/sarangbi60-2018.jpg', title: '사랑비60', year: 2018, size: '20호', series: '사랑비' },
       { src: 'artworks/web/sarangbi/sarangbi61-2019.jpg', title: '사랑비61', year: 2019, size: '50호', series: '사랑비' },
+      { src: 'artworks/web/sarangbi/sarangbi62-2019.jpg', title: '사랑비62', year: 2019, size: '6호', series: '사랑비' },
       // 봄봄 시리즈
       { src: 'artworks/web/bombom/early-spring-2020.jpg', title: '이른 봄', year: 2020, size: '8호', series: '봄봄' },
       { src: 'artworks/web/bombom/petal-spring-2020.jpg', title: '꽃잎 끝에 걸린 봄날', year: 2020, size: '10호', series: '봄봄' },
+      { src: 'artworks/web/bombom/plum-spring-2020.jpg', title: '매화꽃에 걸린 봄', year: 2020, size: '6호', series: '봄봄' },
       { src: 'artworks/web/bombom/wife-space-2020.jpg', title: '아내의 공간', year: 2020, size: '10호', series: '봄봄' },
       { src: 'artworks/web/bombom/wind-spring-2020.jpg', title: '바람에 날려온 봄', year: 2020, size: '20호', series: '봄봄' },
       { src: 'artworks/web/bombom/waiting-2021.jpg', title: '기다림', year: 2021, size: '20호', series: '봄봄' },
@@ -565,6 +575,7 @@
       { src: 'artworks/web/nonilda/bombom8-2023.jpg', title: '봄봄8', year: 2023, size: '20호', series: '노닐다' },
       { src: 'artworks/web/nonilda/bombom9-2023.jpg', title: '봄봄9', year: 2023, size: '20호', series: '노닐다' },
       { src: 'artworks/web/nonilda/flow-2023.jpg', title: '흐름', year: 2023, size: '20호', series: '노닐다' },
+      { src: 'artworks/web/nonilda/passion-2023.jpg', title: '열정', year: 2023, size: '20호', series: '노닐다' },
       { src: 'artworks/web/nonilda/nonilda4-2023.jpg', title: '노닐다4', year: 2023, size: '20호', series: '노닐다' },
       { src: 'artworks/web/nonilda/nonilda5-2024.jpg', title: '노닐다5', year: 2024, size: '50호', series: '노닐다' },
       { src: 'artworks/web/nonilda/nonilda7-2024.jpg', title: '노닐다7', year: 2024, size: '50호', series: '노닐다' },
@@ -582,7 +593,7 @@
     ];
 
     // Selected Works — 각 시리즈에서 대표작 선별
-    const SELECTED_INDICES = [0, 7, 10, 12, 18, 21, 23, 39, 40, 41];
+    const SELECTED_INDICES = [0, 7, 15, 18, 28, 31, 33, 47, 48, 49];
 
     // ═══════════════════════════════════════
     // RENDER GRID
@@ -595,6 +606,16 @@
     // FILTER TABS
     // ═══════════════════════════════════════
     const tabs = document.querySelectorAll('.filter-tab');
+
+    // Auto-populate tab counts from data
+    tabs.forEach(tab => {
+      const filter = tab.dataset.filter;
+      let count;
+      if (filter === 'selected') count = SELECTED_INDICES.length;
+      else if (filter === 'all') count = ALL_WORKS.length;
+      else count = ALL_WORKS.filter(w => w.series === filter).length;
+      tab.textContent = tab.textContent + ` (${count})`;
+    });
 
     const filterSection = document.querySelector('.filter-section');
 

@@ -173,7 +173,7 @@
     .mobile-nav.open { display: flex; }
     .mobile-nav a {
       font-family: var(--font-en);
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 700;
       text-transform: uppercase;
       color: var(--text);
@@ -207,13 +207,6 @@
         bottom: 28px;
         transform: none;
         padding: 0 24px;
-      }
-      .card-box {
-        width: 280px; height: 280px;
-      }
-      .card img {
-        max-width: 280px;
-        max-height: 280px;
       }
     }
   </style>
@@ -252,19 +245,33 @@
     // DATA
     // ═══════════════════════════════════════
     const ALL_WORKS = [
-      // 사랑비 시리즈 — 연도별 대표작 6개
+      // 사랑비 시리즈 (17)
       { src: 'artworks/web/sarangbi/sarangbi-2010.jpg', title: '사랑비', year: 2010 },
       { src: 'artworks/web/sarangbi/sarangbi3-2011.jpg', title: '사랑비3', year: 2011 },
+      { src: 'artworks/web/sarangbi/sarangbi4-2011.jpg', title: '사랑비4', year: 2011 },
+      { src: 'artworks/web/sarangbi/sarangbi-2012.jpg', title: '사랑비', year: 2012 },
       { src: 'artworks/web/sarangbi/sarangbi-2013.jpg', title: '사랑비', year: 2013 },
+      { src: 'artworks/web/sarangbi/sarangbi-2014.jpg', title: '사랑비', year: 2014 },
       { src: 'artworks/web/sarangbi/sarangbi-2015.jpg', title: '사랑비', year: 2015 },
+      { src: 'artworks/web/sarangbi/sarangbi-6ho-2015.jpg', title: '사랑비 6호', year: 2015 },
+      { src: 'artworks/web/sarangbi/sarangbi47-2016.jpg', title: '사랑비47', year: 2016 },
+      { src: 'artworks/web/sarangbi/sarangbi50-2016.jpg', title: '사랑비50', year: 2016 },
       { src: 'artworks/web/sarangbi/sarangbi52-2017.jpg', title: '사랑비52', year: 2017 },
+      { src: 'artworks/web/sarangbi/sarangbi53-2017.jpg', title: '사랑비53', year: 2017 },
+      { src: 'artworks/web/sarangbi/sarangbi54-2017.jpg', title: '사랑비54', year: 2017 },
+      { src: 'artworks/web/sarangbi/sarangbi59-2018.jpg', title: '사랑비59', year: 2018 },
+      { src: 'artworks/web/sarangbi/sarangbi60-2018.jpg', title: '사랑비60', year: 2018 },
       { src: 'artworks/web/sarangbi/sarangbi61-2019.jpg', title: '사랑비61', year: 2019 },
+      { src: 'artworks/web/sarangbi/sarangbi62-2019.jpg', title: '사랑비62', year: 2019 },
+      // 봄봄 시리즈 (7)
       { src: 'artworks/web/bombom/early-spring-2020.jpg', title: '이른 봄', year: 2020 },
       { src: 'artworks/web/bombom/petal-spring-2020.jpg', title: '꽃잎 끝에 걸린 봄날', year: 2020 },
+      { src: 'artworks/web/bombom/plum-spring-2020.jpg', title: '매화꽃에 걸린 봄', year: 2020 },
       { src: 'artworks/web/bombom/wife-space-2020.jpg', title: '아내의 공간', year: 2020 },
       { src: 'artworks/web/bombom/wind-spring-2020.jpg', title: '바람에 날려온 봄', year: 2020 },
       { src: 'artworks/web/bombom/waiting-2021.jpg', title: '기다림', year: 2021 },
       { src: 'artworks/web/bombom/bombom-2021.jpg', title: '봄봄', year: 2021 },
+      // 노닐다 시리즈 (27)
       { src: 'artworks/web/nonilda/bombom-2022.jpg', title: '봄봄', year: 2022 },
       { src: 'artworks/web/nonilda/bombom2-2022.jpg', title: '봄봄2', year: 2022 },
       { src: 'artworks/web/nonilda/bombom4-2022.jpg', title: '봄봄4', year: 2022 },
@@ -277,6 +284,7 @@
       { src: 'artworks/web/nonilda/bombom8-2023.jpg', title: '봄봄8', year: 2023 },
       { src: 'artworks/web/nonilda/bombom9-2023.jpg', title: '봄봄9', year: 2023 },
       { src: 'artworks/web/nonilda/flow-2023.jpg', title: '흐름', year: 2023 },
+      { src: 'artworks/web/nonilda/passion-2023.jpg', title: '열정', year: 2023 },
       { src: 'artworks/web/nonilda/nonilda4-2023.jpg', title: '노닐다4', year: 2023 },
       { src: 'artworks/web/nonilda/nonilda5-2024.jpg', title: '노닐다5', year: 2024 },
       { src: 'artworks/web/nonilda/nonilda7-2024.jpg', title: '노닐다7', year: 2024 },
@@ -305,7 +313,10 @@
       [168,210],[210,163],[170,214],[204,158],[163,204],
       [179,224],[168,210],[214,168],[170,214],[204,158],
       [163,204],[176,218],[210,163],[168,210],[170,214],
-      [204,158],[163,204],[214,168],
+      [204,158],[163,204],[214,168],[179,224],[176,218],
+      [168,210],[210,163],[170,214],[204,158],[163,204],
+      [214,168],[179,224],[176,218],[168,210],[210,163],
+      [170,214],
     ];
 
     // Interleave series first, then shuffle — prevents same-series clustering
@@ -332,12 +343,29 @@
     // ═══════════════════════════════════════
     // FIBONACCI SPHERE — unit sphere points
     // ═══════════════════════════════════════
-    const SPHERE_RADIUS = 350;
+    let SPHERE_RADIUS, BOX_SIZE;
+    const cards = [];
+
+    function updateSizes() {
+      const mobile = window.innerWidth < 768;
+      SPHERE_RADIUS = mobile ? 180 : 350;
+      BOX_SIZE = mobile ? 280 : 500;
+      // Sync JS card dimensions + DOM inline styles
+      cards.forEach(c => {
+        c.w = BOX_SIZE;
+        c.h = BOX_SIZE;
+        c.el.style.width = BOX_SIZE + 'px';
+        c.el.style.height = BOX_SIZE + 'px';
+        c.el.querySelector('img').style.maxWidth = BOX_SIZE + 'px';
+        c.el.querySelector('img').style.maxHeight = BOX_SIZE + 'px';
+      });
+    }
+    updateSizes(); // safe — cards is empty on first call
+
     const goldenAngle = Math.PI * (3 - Math.sqrt(5));
     const spherePoints = [];
 
     for (let i = 0; i < TOTAL; i++) {
-      // offset by 0.5 to avoid exact poles — no card stuck at center
       const y = 1 - ((i + 0.5) / TOTAL) * 2;
       const radiusAtY = Math.sqrt(1 - y * y);
       const theta = goldenAngle * i;
@@ -353,9 +381,6 @@
     // ═══════════════════════════════════════
     const sceneEl = document.getElementById('scene');
     const tooltipEl = document.getElementById('tooltip');
-    const cards = [];
-
-    const BOX_SIZE = 500;
 
     images.forEach((img, i) => {
       const size = SIZES[i % SIZES.length];
@@ -391,6 +416,9 @@
       sceneEl.appendChild(box);
       cards.push({ el: box, w: BOX_SIZE, h: BOX_SIZE, sphere: spherePoints[i] });
     });
+    updateSizes(); // apply sizes to newly created cards
+
+    window.addEventListener('resize', updateSizes);
 
     // ═══════════════════════════════════════
     // STATE
@@ -463,10 +491,7 @@
         const hw = p.card.w / 2;
         const hh = p.card.h / 2;
 
-        // translate3d for 3D position, scale for zoom-proportional card sizing
-        // CSS perspective adds depth effect, scale makes cards grow when zooming in
-        // Start at 0.33 (renders ~200px cards as ~66px), zoom to full res
-        const BASE_SCALE = 0.11; // 500px * 0.11 ≈ 55px at start, sharp when zoomed
+        const BASE_SCALE = 0.11;
         const cardScale = BASE_SCALE * (zoomScale / MIN_ZOOM);
         el.style.transform = `translate3d(${x - hw}px, ${y - hh}px, ${z}px) scale(${cardScale})`;
         el.style.zIndex = sortIdx;

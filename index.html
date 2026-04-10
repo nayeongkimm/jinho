@@ -112,6 +112,11 @@
       color: var(--text-muted);
       opacity: 0; animation: fadeIn 1s ease 1.5s forwards;
     }
+    .hint-mobile { display: none; }
+    @media (max-width: 767px) {
+      .hint-desktop { display: none; }
+      .hint-mobile { display: inline; }
+    }
 
     .tooltip {
       position: fixed; z-index: 2000; pointer-events: none;
@@ -235,8 +240,10 @@
   <div class="scene" id="scene"></div>
 
   <div class="bottom-hints">
-    <span class="hint">Scroll to dive in ></span>
-    <span class="hint">< Drag to rotate</span>
+    <span class="hint hint-desktop">Scroll to dive in ></span>
+    <span class="hint hint-desktop">< Drag to rotate</span>
+    <span class="hint hint-mobile">Pinch to zoom ></span>
+    <span class="hint hint-mobile">< Drag to rotate</span>
   </div>
 
   <div class="tooltip" id="tooltip"></div>

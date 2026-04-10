@@ -260,8 +260,36 @@
   </footer>
 
   <script>
-    // All artwork paths for random selection
-    const allImages = [
+    // Artwork paths grouped by series
+    const sarangbi = [
+      'artworks/web/sarangbi/sarangbi-2010.jpg',
+      'artworks/web/sarangbi/sarangbi-2012.jpg',
+      'artworks/web/sarangbi/sarangbi-2013.jpg',
+      'artworks/web/sarangbi/sarangbi-2014.jpg',
+      'artworks/web/sarangbi/sarangbi-2015.jpg',
+      'artworks/web/sarangbi/sarangbi-6ho-2015.jpg',
+      'artworks/web/sarangbi/sarangbi3-2011.jpg',
+      'artworks/web/sarangbi/sarangbi4-2011.jpg',
+      'artworks/web/sarangbi/sarangbi47-2016.jpg',
+      'artworks/web/sarangbi/sarangbi50-2016.jpg',
+      'artworks/web/sarangbi/sarangbi52-2017.jpg',
+      'artworks/web/sarangbi/sarangbi53-2017.jpg',
+      'artworks/web/sarangbi/sarangbi54-2017.jpg',
+      'artworks/web/sarangbi/sarangbi59-2018.jpg',
+      'artworks/web/sarangbi/sarangbi60-2018.jpg',
+      'artworks/web/sarangbi/sarangbi61-2019.jpg',
+      'artworks/web/sarangbi/sarangbi62-2019.jpg',
+    ];
+    const bombom = [
+      'artworks/web/bombom/waiting-2021.jpg',
+      'artworks/web/bombom/petal-spring-2020.jpg',
+      'artworks/web/bombom/wind-spring-2020.jpg',
+      'artworks/web/bombom/bombom-2021.jpg',
+      'artworks/web/bombom/wife-space-2020.jpg',
+      'artworks/web/bombom/early-spring-2020.jpg',
+      'artworks/web/bombom/plum-spring-2020.jpg',
+    ];
+    const nonilda = [
       'artworks/web/nonilda/nonilda-2023.jpg',
       'artworks/web/nonilda/nonilda10-2025.jpg',
       'artworks/web/nonilda/nonilda11-2025.jpg',
@@ -286,38 +314,17 @@
       'artworks/web/nonilda/bombom7-2023.jpg',
       'artworks/web/nonilda/bombom8-2023.jpg',
       'artworks/web/nonilda/bombom9-2023.jpg',
+      'artworks/web/nonilda/passion-2023.jpg',
       'artworks/web/nonilda/passion-2024.jpg',
       'artworks/web/nonilda/flow-2023.jpg',
-      'artworks/web/bombom/waiting-2021.jpg',
-      'artworks/web/bombom/petal-spring-2020.jpg',
-      'artworks/web/bombom/wind-spring-2020.jpg',
-      'artworks/web/bombom/bombom-2021.jpg',
-      'artworks/web/bombom/wife-space-2020.jpg',
-      'artworks/web/bombom/early-spring-2020.jpg',
-      'artworks/web/sarangbi/sarangbi-2010.jpg',
-      'artworks/web/sarangbi/sarangbi-2012.jpg',
-      'artworks/web/sarangbi/sarangbi-2013.jpg',
-      'artworks/web/sarangbi/sarangbi-2014.jpg',
-      'artworks/web/sarangbi/sarangbi-2015.jpg',
-      'artworks/web/sarangbi/sarangbi-6ho-2015.jpg',
-      'artworks/web/sarangbi/sarangbi3-2011.jpg',
-      'artworks/web/sarangbi/sarangbi4-2011.jpg',
-      'artworks/web/sarangbi/sarangbi52-2017.jpg',
-      'artworks/web/sarangbi/sarangbi60-2018.jpg',
-      'artworks/web/sarangbi/sarangbi61-2019.jpg'
     ];
 
-    // Shuffle and pick 4 random images
-    function shuffle(arr) {
-      const a = [...arr];
-      for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-      }
-      return a;
+    // Pick one random image from each series
+    function pickRandom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
     }
 
-    const selected = shuffle(allImages).slice(0, 3);
+    const selected = [pickRandom(sarangbi), pickRandom(bombom), pickRandom(nonilda)];
     const container = document.getElementById('previewImages');
 
     selected.forEach(src => {

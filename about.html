@@ -14,6 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Asul:wght@400;700&display=block" as="style" />
   <link href="https://fonts.googleapis.com/css2?family=Asul:wght@400;700&display=block" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     @font-face {
       font-family: 'Pretendard';
@@ -608,9 +609,9 @@
         <div class="about-image">
           <img src="about image/jinhokim.jpeg" alt="김진호 작가">
         </div>
-        <div class="about-text">
-          <p>김진호 작가는 자연의 경이로운 생명력과 그에 조응하는 내면세계를 선과 색채의 변주로 탐구한다. '노닐다' 시리즈는 자연의 일부가 되어 자유롭게 거니는 듯한 여유와 기운찬 생명 에너지를 화폭에 응축해 담아낸다. 화면을 채운 깊은 청색은 평온한 안식을, 강렬한 적색은 뜨거운 생의 열망을, 싱그러운 녹색은 새로운 희망의 기운을 상징하며 생의 리듬을 완성한다.</p>
-          <p>한국 단색화의 정적인 사유와 서양 추상표현주의의 역동적인 에너지가 공존하는 작품들은, 기하학적 형태와 강렬한 색조를 통해 자연의 본질을 꿰뚫는다. 고요함 속의 흰 여백은 깊은 명상을 유도하며 작가의 내면세계를 투영하는 거울이 된다. 감상자는 이 비어있는 공간을 통해 무한한 성장의 가능성을 마주하며, 자연과 물아일체(物我一體)가 되는 해방감을 경험하게 된다.</p>
+        <div class="about-text" id="aboutText">
+          <p id="bioP1">김진호 작가는 자연의 경이로운 생명력과 그에 조응하는 내면세계를 선과 색채의 변주로 탐구한다. '노닐다' 시리즈는 자연의 일부가 되어 자유롭게 거니는 듯한 여유와 기운찬 생명 에너지를 화폭에 응축해 담아낸다. 화면을 채운 깊은 청색은 평온한 안식을, 강렬한 적색은 뜨거운 생의 열망을, 싱그러운 녹색은 새로운 희망의 기운을 상징하며 생의 리듬을 완성한다.</p>
+          <p id="bioP2">한국 단색화의 정적인 사유와 서양 추상표현주의의 역동적인 에너지가 공존하는 작품들은, 기하학적 형태와 강렬한 색조를 통해 자연의 본질을 꿰뚫는다. 고요함 속의 흰 여백은 깊은 명상을 유도하며 작가의 내면세계를 투영하는 거울이 된다. 감상자는 이 비어있는 공간을 통해 무한한 성장의 가능성을 마주하며, 자연과 물아일체(物我一體)가 되는 해방감을 경험하게 된다.</p>
         </div>
       </div>
     </section>
@@ -636,15 +637,15 @@
       <div class="education-content">
         <div class="education-item">
           <span class="education-label">Education</span>
-          <span class="education-value">경북대학교 예술대학 및 동 교육대학원 졸업</span>
+          <span class="education-value" id="eduEducation">경북대학교 예술대학 및 동 교육대학원 졸업</span>
         </div>
         <div class="education-item">
           <span class="education-label">Affiliation</span>
-          <span class="education-value">한국미협, 울산미협, 표상회</span>
+          <span class="education-value" id="eduAffiliation">한국미협, 울산미협, 표상회</span>
         </div>
         <div class="education-item">
           <span class="education-label">Current</span>
-          <span class="education-value">현대청운중학교</span>
+          <span class="education-value" id="eduCurrent">현대청운중학교</span>
         </div>
       </div>
     </section>
@@ -943,6 +944,65 @@
       hamburger.classList.toggle('open');
       mobileNav.classList.toggle('open');
     });
+
+    // ═══════════════════════════════════════
+    // SUPABASE: About 콘텐츠 동적 로드
+    // ═══════════════════════════════════════
+    (async function loadAboutFromDB() {
+      try {
+        const SUPABASE_URL = 'https://tcjoluusbvyqlwexnfkw.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjam9sdXVzYnZ5cWx3ZXhuZmt3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDA3NzksImV4cCI6MjA5MTQ3Njc3OX0.bh-iNCetM7JZ4Z4kxC83XvFTU8vY_qQSbo7SD8rLB5w';
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const { data } = await sb.from('about_content').select('*');
+        if (!data || data.length === 0) return;
+
+        const map = {};
+        data.forEach(row => { map[row.key] = row.value; });
+
+        // Bio — 'bio' 키 (줄바꿈으로 문단 구분), 없으면 bio_p1/bio_p2 폴백
+        const aboutText = document.getElementById('aboutText');
+        if (map['bio']) {
+          const paragraphs = map['bio'].split('\n\n').filter(p => p.trim());
+          aboutText.innerHTML = paragraphs.map(p => `<p>${p.trim()}</p>`).join('');
+        } else {
+          // 기존 bio_p1/bio_p2 폴백
+          if (map['bio_p1']) document.getElementById('bioP1').textContent = map['bio_p1'];
+          if (map['bio_p2']) document.getElementById('bioP2').textContent = map['bio_p2'];
+        }
+
+        // 작가 사진
+        if (map['artist_photo']) {
+          const imgEl = document.querySelector('.about-image img');
+          if (imgEl) imgEl.src = map['artist_photo'];
+        }
+
+        // Education
+        if (map['education']) document.getElementById('eduEducation').textContent = map['education'];
+        if (map['affiliation']) document.getElementById('eduAffiliation').textContent = map['affiliation'];
+        if (map['current_position']) document.getElementById('eduCurrent').textContent = map['current_position'];
+
+        // 전시 이력 — DB에서 JSON으로 저장된 데이터가 있으면 오버라이드
+        if (map['exhibitions_solo']) {
+          try {
+            const soloFromDB = JSON.parse(map['exhibitions_solo']);
+            Object.keys(soloFromDB).forEach(y => { SOLO_DATA[y] = soloFromDB[y]; });
+            // 기존에 없는 연도도 추가
+            document.getElementById('tab-solo').innerHTML = '';
+            renderAccordion('tab-solo', SOLO_DATA);
+          } catch (e) { /* JSON 파싱 실패 시 기본값 사용 */ }
+        }
+        if (map['exhibitions_group']) {
+          try {
+            const groupFromDB = JSON.parse(map['exhibitions_group']);
+            Object.keys(groupFromDB).forEach(y => { GROUP_DATA[y] = groupFromDB[y]; });
+            document.getElementById('tab-group').innerHTML = '';
+            renderAccordion('tab-group', GROUP_DATA);
+          } catch (e) { /* JSON 파싱 실패 시 기본값 사용 */ }
+        }
+      } catch (e) {
+        console.warn('About 데이터 로드 실패 (기본값 사용):', e);
+      }
+    })();
   </script>
 
 </body>

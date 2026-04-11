@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Jinho Kim</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Asul:wght@400;700&display=block" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    @font-face {
+      font-family: 'Pretendard';
+      src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+      font-weight: 400; font-style: normal;
+    }
+
+    :root {
+      --font-en: 'Asul', Georgia, serif;
+      --font-ko: 'Pretendard', -apple-system, sans-serif;
+      --text-primary: #1A1A1A;
+      --text-secondary: #6B6661;
+      --text-muted: #A19994;
+      --accent: #2563EB;
+      --accent-hover: #1D4ED8;
+      --danger: #DC2626;
+      --danger-hover: #B91C1C;
+      --success: #16A34A;
+      --border: #E5E7EB;
+      --bg: #F9FAFB;
+      --bg-white: #FFFFFF;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { -webkit-font-smoothing: antialiased; }
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font-ko);
+      min-height: 100vh;
+    }
+
+    /* ─── Login Screen ─── */
+    .login-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .login-box {
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 400px;
+    }
+    .login-logo {
+      font-family: var(--font-en);
+      font-size: 22px;
+      color: var(--text-primary);
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .login-subtitle {
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-label {
+      display: block;
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+    .form-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: var(--font-ko);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-input:focus {
+      border-color: var(--accent);
+    }
+    .form-input::placeholder {
+      color: var(--text-muted);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: var(--font-ko);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--text-primary);
+      color: #fff;
+      width: 100%;
+    }
+    .btn-primary:hover { background: #333; }
+    .btn-accent {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-accent:hover { background: var(--accent-hover); }
+    .btn-outline {
+      background: var(--bg-white);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { background: var(--bg); }
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+    }
+    .btn-danger:hover { background: var(--danger-hover); }
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+    .btn-icon {
+      padding: 6px;
+      background: none;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .btn-icon:hover {
+      background: var(--bg);
+      color: var(--text-primary);
+      border-color: var(--border);
+    }
+    .exh-year-group { margin-bottom: 16px; }
+    .exh-year-label { font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+    .exh-item { display: flex; align-items: center; gap: 6px; padding: 3px 0; font-size: 14px; border-bottom: 1px solid var(--border); }
+    .exh-item:last-child { border-bottom: none; }
+    .exh-edit-input { border-color: transparent !important; background: transparent; }
+    .exh-edit-input:focus { border-color: var(--accent) !important; background: var(--bg-white); }
+    .exh-del { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; padding: 2px 6px; flex-shrink: 0; }
+    .exh-del:hover { color: var(--danger); }
+    .exh-type-btn.active { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
+    .login-error {
+      color: var(--danger);
+      font-size: 13px;
+      text-align: center;
+      margin-top: 12px;
+      display: none;
+    }
+
+    /* ─── Admin Layout ─── */
+    .admin-screen { display: none; }
+    .admin-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 56px;
+      background: var(--bg-white);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .admin-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .admin-logo {
+      font-family: var(--font-en);
+      font-size: 18px;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+    .admin-badge {
+      font-size: 11px;
+      color: var(--accent);
+      background: #EFF6FF;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    .admin-tabs {
+      display: flex;
+      gap: 0;
+    }
+    .admin-tab {
+      background: none;
+      border: none;
+      padding: 16px 20px;
+      font-size: 14px;
+      font-family: var(--font-ko);
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .admin-tab:hover { color: var(--text-primary); }
+    .admin-tab.active {
+      color: var(--text-primary);
+      border-bottom-color: var(--text-primary);
+      font-weight: 600;
+    }
+    .admin-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px;
+    }
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ─── Works Panel ─── */
+    .works-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .works-search {
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: var(--font-ko);
+      width: 280px;
+      outline: none;
+    }
+    .works-search:focus { border-color: var(--accent); }
+    .works-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+    @media (max-width: 1024px) {
+      .works-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .works-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .work-card {
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: box-shadow 0.2s;
+    }
+    .work-card:hover {
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    .work-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px 0;
+    }
+    .work-card-num {
+      font-family: var(--font-en);
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .work-card-badges {
+      display: flex;
+      gap: 4px;
+    }
+    .work-card-img {
+      aspect-ratio: 1/1;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 8px 14px;
+      border: 1px solid #F7F5F3;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .work-card-img img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    .work-card-info {
+      padding: 0 14px 10px;
+    }
+    .work-card-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .work-card-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .work-card-actions {
+      display: flex;
+      gap: 4px;
+      padding: 0 14px 12px;
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+      margin-top: 8px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    .badge-selected {
+      background: #DBEAFE;
+      color: #1D4ED8;
+    }
+    .badge-hidden {
+      background: #FEE2E2;
+      color: #B91C1C;
+    }
+    .badge-visible {
+      background: #DCFCE7;
+      color: #16A34A;
+    }
+    .actions-cell {
+      display: flex;
+      gap: 4px;
+    }
+    .work-count {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* ─── Modal ─── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.open {
+      display: flex;
+    }
+    .modal {
+      background: var(--bg-white);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 32px;
+    }
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 24px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .form-check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .form-check input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+    }
+    .form-check label {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    /* ─── About Panel ─── */
+    .about-section-card {
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .about-section-card h3 {
+      font-size: 16px;
+      margin-bottom: 16px;
+    }
+    .form-textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: var(--font-ko);
+      line-height: 1.7;
+      resize: vertical;
+      outline: none;
+      min-height: 120px;
+    }
+    .form-textarea:focus { border-color: var(--accent); }
+
+    /* ─── Settings Panel ─── */
+    .settings-card {
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 480px;
+    }
+    .settings-card h3 {
+      font-size: 16px;
+      margin-bottom: 16px;
+    }
+
+    /* ─── Upload Area ─── */
+    .upload-area {
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .upload-area:hover, .upload-area.dragover {
+      border-color: var(--accent);
+      background: #F7FAFF;
+    }
+    .upload-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    .upload-preview {
+      max-width: 100%;
+      max-height: 200px;
+      object-fit: contain;
+      border-radius: 4px;
+    }
+    .upload-status {
+      font-size: 12px;
+      margin-top: 6px;
+      color: var(--text-muted);
+    }
+    .upload-status.uploading { color: var(--accent); }
+    .upload-status.done { color: var(--success); }
+    .upload-status.error { color: var(--danger); }
+
+    /* ─── Toast ─── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #fff;
+      z-index: 2000;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .toast-success { background: var(--success); }
+    .toast-error { background: var(--danger); }
+
+    /* ─── Loading ─── */
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 768px) {
+      .admin-header {
+        padding: 0 16px;
+        flex-wrap: wrap;
+        height: auto;
+        padding-top: 12px;
+        padding-bottom: 0;
+      }
+      .admin-tabs {
+        width: 100%;
+        overflow-x: auto;
+      }
+      .admin-tab {
+        padding: 12px 14px;
+        font-size: 13px;
+      }
+      .admin-content { padding: 20px 16px; }
+      .works-toolbar { flex-direction: column; align-items: stretch; }
+      .works-search { width: 100%; }
+      .works-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+      .form-row { grid-template-columns: 1fr; }
+      .login-box { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ LOGIN ═══ -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-box">
+      <div class="login-logo">Jinho Kim</div>
+      <div class="login-subtitle">관리자 로그인</div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label class="form-label">이메일</label>
+          <input class="form-input" type="email" id="loginEmail" placeholder="admin@example.com" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">비밀번호</label>
+          <input class="form-input" type="password" id="loginPw" placeholder="비밀번호" required />
+        </div>
+        <button class="btn btn-primary" type="submit" id="loginBtn">로그인</button>
+        <div class="login-error" id="loginError"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══ ADMIN ═══ -->
+  <div class="admin-screen" id="adminScreen">
+    <header class="admin-header">
+      <div class="admin-header-left">
+        <a href="admin.html" class="admin-logo">Jinho Kim</a>
+        <span class="admin-badge">Admin</span>
+      </div>
+      <div class="admin-tabs" id="adminTabs">
+        <button class="admin-tab active" data-panel="works">작품 관리</button>
+        <button class="admin-tab" data-panel="about">About</button>
+        <button class="admin-tab" data-panel="settings">설정</button>
+      </div>
+      <button class="btn btn-outline btn-sm" id="logoutBtn">로그아웃</button>
+    </header>
+
+    <div class="admin-content">
+      <!-- ── Works Panel ── -->
+      <div class="panel active" id="panelWorks">
+        <div class="works-toolbar">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <input class="works-search" type="text" id="worksSearch" placeholder="작품 검색 (제목, 시리즈, 연도)..." />
+            <span class="work-count" id="workCount"></span>
+          </div>
+          <button class="btn btn-accent btn-sm" id="addWorkBtn">+ 작품 추가</button>
+        </div>
+        <div class="works-grid" id="worksGrid"></div>
+      </div>
+
+      <!-- ── About Panel ── -->
+      <div class="panel" id="panelAbout">
+        <div class="about-section-card">
+          <h3>작가 사진</h3>
+          <div class="upload-area" id="photoUploadArea" style="max-width:300px;">
+            <img class="upload-preview" id="photoPreview" src="" alt="" style="display:none;" />
+            <div class="upload-placeholder" id="photoPlaceholder">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#A19994" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span>클릭하여 사진 선택</span>
+            </div>
+            <input type="file" id="photoFile" accept="image/jpeg,image/png,image/webp" style="display:none;" />
+          </div>
+          <div class="upload-status" id="photoStatus"></div>
+          <button class="btn btn-accent btn-sm" id="savePhotoBtn" style="margin-top:12px;">사진 저장</button>
+        </div>
+
+        <div class="about-section-card">
+          <h3>작가 소개 글</h3>
+          <div class="form-group">
+            <label class="form-label">작가 소개 글 (빈 줄로 문단 구분)</label>
+            <textarea class="form-textarea" id="bioText" rows="8" placeholder="Enter를 두 번 눌러 문단을 나눌 수 있습니다."></textarea>
+          </div>
+          <button class="btn btn-accent btn-sm" id="saveBioBtn">저장</button>
+        </div>
+
+        <div class="about-section-card">
+          <h3>전시 이력</h3>
+          <div style="display:flex;gap:8px;margin-bottom:12px;">
+            <button class="btn btn-outline btn-sm exh-type-btn active" data-type="solo">개인전 및 부스전</button>
+            <button class="btn btn-outline btn-sm exh-type-btn" data-type="group">단체전 및 기획, 초대전</button>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border);">
+            <input class="form-input" id="exhYear" type="number" placeholder="연도" style="width:100px;" value="2025" />
+            <input class="form-input" id="exhEntry" placeholder="전시 내용 (예: 5회 개인전 — 확장전 (한빛갤러리, 울산))" style="flex:1;" />
+            <button class="btn btn-accent btn-sm" id="addExhBtn">추가</button>
+          </div>
+          <div id="exhList"></div>
+          <button class="btn btn-accent btn-sm" id="saveExhBtn" style="margin-top:12px;">전시 이력 저장</button>
+        </div>
+
+        <div class="about-section-card">
+          <h3>학력 / 소속</h3>
+          <div class="form-group">
+            <label class="form-label">Education</label>
+            <input class="form-input" id="eduEducation" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Affiliation</label>
+            <input class="form-input" id="eduAffiliation" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Current</label>
+            <input class="form-input" id="eduCurrent" />
+          </div>
+          <button class="btn btn-accent btn-sm" id="saveEduBtn">저장</button>
+        </div>
+      </div>
+
+      <!-- ── Settings Panel ── -->
+      <div class="panel" id="panelSettings">
+        <div class="settings-card" style="margin-bottom:24px;">
+          <h3>비밀번호 변경</h3>
+          <div class="form-group">
+            <label class="form-label">새 비밀번호</label>
+            <input class="form-input" type="password" id="newPw" placeholder="6자 이상" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">비밀번호 확인</label>
+            <input class="form-input" type="password" id="confirmPw" placeholder="다시 입력" />
+          </div>
+          <button class="btn btn-accent btn-sm" id="changePwBtn">변경</button>
+        </div>
+        <div class="settings-card">
+          <h3>사이트 링크</h3>
+          <p style="font-size:14px;color:var(--text-secondary);margin-bottom:12px;">
+            <a href="index.html" style="color:var(--accent);">메인 페이지</a> ·
+            <a href="works.html" style="color:var(--accent);">Works</a> ·
+            <a href="about.html" style="color:var(--accent);">About</a> ·
+            <a href="shop.html" style="color:var(--accent);">Shop</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ARTWORK MODAL ═══ -->
+  <div class="modal-overlay" id="workModal">
+    <div class="modal">
+      <div class="modal-title" id="modalTitle">작품 수정</div>
+      <input type="hidden" id="editId" />
+      <div class="form-group">
+        <label class="form-label">제목</label>
+        <input class="form-input" id="editTitle" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">연도</label>
+        <input class="form-input" type="number" id="editYear" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">호수</label>
+        <input class="form-input" id="editSize" placeholder="예: 50호" />
+      </div>
+      <div class="form-row" style="margin-top:8px;">
+        <div class="form-check">
+          <input type="checkbox" id="editSelected" />
+          <label for="editSelected">Selected Works에 표시</label>
+        </div>
+        <div class="form-check">
+          <input type="checkbox" id="editVisible" />
+          <label for="editVisible">사이트에 표시</label>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:16px;">
+        <label class="form-label">이미지</label>
+        <div class="upload-area" id="uploadArea">
+          <img class="upload-preview" id="uploadPreview" src="" alt="" style="display:none;" />
+          <div class="upload-placeholder" id="uploadPlaceholder">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#A19994" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span>클릭하여 이미지 선택 또는 여기에 드래그</span>
+          </div>
+          <input type="file" id="editFile" accept="image/jpeg,image/png,image/webp" style="display:none;" />
+        </div>
+        <input type="hidden" id="editSrc" />
+        <input type="hidden" id="editHqSrc" />
+        <div class="upload-status" id="uploadStatus"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-outline btn-sm" id="modalCancelBtn">취소</button>
+        <button class="btn btn-accent btn-sm" id="modalSaveBtn">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ DELETE CONFIRM MODAL ═══ -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal" style="max-width:380px;">
+      <div class="modal-title">작품 삭제</div>
+      <p style="font-size:14px;color:var(--text-secondary);margin-bottom:8px;">
+        "<span id="deleteName"></span>"을(를) 정말 삭제하시겠습니까?
+      </p>
+      <p style="font-size:13px;color:var(--danger);">이 작업은 되돌릴 수 없습니다.</p>
+      <input type="hidden" id="deleteId" />
+      <div class="modal-actions">
+        <button class="btn btn-outline btn-sm" id="deleteCancelBtn">취소</button>
+        <button class="btn btn-danger btn-sm" id="deleteConfirmBtn">삭제</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TOAST ═══ -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ═══════════════════════════════════════
+    // SUPABASE CONFIG
+    // ═══════════════════════════════════════
+    const SUPABASE_URL = 'https://tcjoluusbvyqlwexnfkw.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjam9sdXVzYnZ5cWx3ZXhuZmt3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDA3NzksImV4cCI6MjA5MTQ3Njc3OX0.bh-iNCetM7JZ4Z4kxC83XvFTU8vY_qQSbo7SD8rLB5w';
+
+    let sb;
+    try {
+      sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    } catch (e) {
+      console.error('Supabase 초기화 실패:', e);
+    }
+
+    // ═══════════════════════════════════════
+    // TOAST
+    // ═══════════════════════════════════════
+    function showToast(msg, type = 'success') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast toast-' + type + ' show';
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // ═══════════════════════════════════════
+    // AUTH
+    // ═══════════════════════════════════════
+    const loginScreen = document.getElementById('loginScreen');
+    const adminScreen = document.getElementById('adminScreen');
+
+    async function checkSession() {
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) {
+        loginScreen.style.display = 'none';
+        adminScreen.style.display = 'block';
+        loadWorks();
+        loadAbout();
+      }
+    }
+    checkSession();
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const pw = document.getElementById('loginPw').value;
+      const errEl = document.getElementById('loginError');
+      const btn = document.getElementById('loginBtn');
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>';
+      errEl.style.display = 'none';
+
+      const { error } = await sb.auth.signInWithPassword({ email, password: pw });
+      if (error) {
+        errEl.textContent = '이메일 또는 비밀번호가 올바르지 않습니다.';
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = '로그인';
+        return;
+      }
+      loginScreen.style.display = 'none';
+      adminScreen.style.display = 'block';
+      loadWorks();
+      loadAbout();
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await sb.auth.signOut();
+      location.reload();
+    });
+
+    // ═══════════════════════════════════════
+    // TABS
+    // ═══════════════════════════════════════
+    document.getElementById('adminTabs').addEventListener('click', (e) => {
+      const tab = e.target.closest('.admin-tab');
+      if (!tab) return;
+      document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      const panelName = tab.dataset.panel;
+      document.getElementById('panel' + panelName.charAt(0).toUpperCase() + panelName.slice(1)).classList.add('active');
+    });
+
+    // ═══════════════════════════════════════
+    // WORKS — LOAD & RENDER
+    // ═══════════════════════════════════════
+    let allWorks = [];
+
+    // 제목에서 숫자 추출 (노닐다17 → 17, 사랑비 → 0)
+    function extractNum(title) {
+      const m = title.match(/(\d+)\s*$/);
+      return m ? parseInt(m[1], 10) : 0;
+    }
+
+    async function loadWorks() {
+      const { data, error } = await sb
+        .from('artworks')
+        .select('*');
+
+      if (error) {
+        showToast('작품 로딩 실패: ' + error.message, 'error');
+        return;
+      }
+      // 정렬: 연도 내림차순 → 같은 연도 내에서 제목 숫자 내림차순
+      allWorks = (data || []).sort((a, b) => {
+        if (a.year !== b.year) return b.year - a.year;
+        return extractNum(b.title) - extractNum(a.title);
+      });
+      renderWorks(allWorks);
+    }
+
+    function renderWorks(works) {
+      const grid = document.getElementById('worksGrid');
+      document.getElementById('workCount').textContent = works.length + '개 작품';
+
+      if (works.length === 0) {
+        grid.innerHTML = '<p style="text-align:center;padding:40px;color:var(--text-muted);grid-column:1/-1;">작품이 없습니다.</p>';
+        return;
+      }
+
+      grid.innerHTML = works.map((w, i) => {
+        const num = String(i + 1).padStart(2, '0');
+        const meta = w.size ? `${w.year}년, ${w.size}` : `${w.year}년`;
+        return `
+          <div class="work-card" data-id="${w.id}">
+            <div class="work-card-header">
+              <span class="work-card-num">${num}.</span>
+              <div class="work-card-badges">
+                ${w.is_selected ? '<span class="badge badge-selected">Selected</span>' : ''}
+                ${w.is_visible ? '<span class="badge badge-visible">공개</span>' : '<span class="badge badge-hidden">비공개</span>'}
+              </div>
+            </div>
+            <div class="work-card-img">
+              <img src="${w.src}" alt="${esc(w.title)}" loading="lazy" onerror="this.style.display='none'" />
+            </div>
+            <div class="work-card-info">
+              <div class="work-card-title">${esc(w.title)}</div>
+              <div class="work-card-meta">${meta}</div>
+            </div>
+            <div class="work-card-actions">
+              <button class="btn-icon edit-btn" title="수정" data-id="${w.id}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                수정
+              </button>
+              <button class="btn-icon del-btn" title="삭제" data-id="${w.id}" data-title="${esc(w.title)}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                삭제
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function esc(s) {
+      if (!s) return '';
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // Search
+    document.getElementById('worksSearch').addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase();
+      if (!q) { renderWorks(allWorks); return; }
+      renderWorks(allWorks.filter(w =>
+        w.title.toLowerCase().includes(q) ||
+        w.series.toLowerCase().includes(q) ||
+        String(w.year).includes(q)
+      ));
+    });
+
+    // ═══════════════════════════════════════
+    // WORKS — ADD / EDIT / DELETE
+    // ═══════════════════════════════════════
+    const workModal = document.getElementById('workModal');
+    const deleteModal = document.getElementById('deleteModal');
+
+    // ═══════════════════════════════════════
+    // IMAGE UPLOAD
+    // ═══════════════════════════════════════
+    const uploadArea = document.getElementById('uploadArea');
+    const uploadPreview = document.getElementById('uploadPreview');
+    const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+    const uploadStatus = document.getElementById('uploadStatus');
+    const editFile = document.getElementById('editFile');
+    let pendingFile = null; // 업로드 대기 중인 파일
+
+    uploadArea.addEventListener('click', () => editFile.click());
+    uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+    uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) handleFileSelect(file);
+    });
+    editFile.addEventListener('change', (e) => {
+      if (e.target.files[0]) handleFileSelect(e.target.files[0]);
+    });
+
+    function handleFileSelect(file) {
+      pendingFile = file;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        uploadPreview.src = e.target.result;
+        uploadPreview.style.display = 'block';
+        uploadPlaceholder.style.display = 'none';
+        uploadStatus.textContent = file.name + ' (' + (file.size / 1024).toFixed(0) + 'KB) — 저장 시 업로드됩니다';
+        uploadStatus.className = 'upload-status';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function resetUpload() {
+      pendingFile = null;
+      editFile.value = '';
+      uploadPreview.style.display = 'none';
+      uploadPlaceholder.style.display = 'flex';
+      uploadStatus.textContent = '';
+      uploadStatus.className = 'upload-status';
+    }
+
+    async function uploadImage(file, series) {
+      // 파일명: series/timestamp-originalname
+      const safeName = file.name.replace(/[^a-zA-Z0-9가-힣.\-_]/g, '_');
+      const path = `${series}/${Date.now()}-${safeName}`;
+
+      uploadStatus.textContent = '업로드 중...';
+      uploadStatus.className = 'upload-status uploading';
+
+      const { data, error } = await sb.storage
+        .from('artworks')
+        .upload(path, file, { cacheControl: '3600', upsert: false });
+
+      if (error) throw error;
+
+      // Public URL 생성
+      const { data: urlData } = sb.storage.from('artworks').getPublicUrl(path);
+      return urlData.publicUrl;
+    }
+
+    // Add
+    document.getElementById('addWorkBtn').addEventListener('click', () => {
+      document.getElementById('modalTitle').textContent = '작품 추가';
+      document.getElementById('editId').value = '';
+      document.getElementById('editTitle').value = '';
+      document.getElementById('editYear').value = new Date().getFullYear();
+      document.getElementById('editSize').value = '';
+      document.getElementById('editSelected').checked = false;
+      document.getElementById('editVisible').checked = true;
+      document.getElementById('editSrc').value = '';
+      document.getElementById('editHqSrc').value = '';
+      resetUpload();
+      workModal.classList.add('open');
+    });
+
+    // Edit (delegate)
+    document.getElementById('worksGrid').addEventListener('click', (e) => {
+      const editBtn = e.target.closest('.edit-btn');
+      const delBtn = e.target.closest('.del-btn');
+
+      if (editBtn) {
+        const id = editBtn.dataset.id;
+        const w = allWorks.find(x => String(x.id) === id);
+        if (!w) return;
+        document.getElementById('modalTitle').textContent = '작품 수정';
+        document.getElementById('editId').value = w.id;
+        document.getElementById('editTitle').value = w.title;
+        document.getElementById('editYear').value = w.year;
+        document.getElementById('editSize').value = w.size || '';
+        document.getElementById('editSelected').checked = w.is_selected;
+        document.getElementById('editVisible').checked = w.is_visible;
+        document.getElementById('editSrc').value = w.src;
+        document.getElementById('editHqSrc').value = w.hq_src || '';
+        // 기존 이미지 미리보기
+        resetUpload();
+        if (w.src) {
+          uploadPreview.src = w.src;
+          uploadPreview.style.display = 'block';
+          uploadPlaceholder.style.display = 'none';
+          uploadStatus.textContent = '새 이미지를 선택하면 교체됩니다';
+          uploadStatus.className = 'upload-status';
+        }
+        workModal.classList.add('open');
+      }
+
+      if (delBtn) {
+        document.getElementById('deleteId').value = delBtn.dataset.id;
+        document.getElementById('deleteName').textContent = delBtn.dataset.title;
+        deleteModal.classList.add('open');
+      }
+    });
+
+    // Save (add or edit) — 이미지 업로드 포함
+    document.getElementById('modalSaveBtn').addEventListener('click', async () => {
+      const id = document.getElementById('editId').value;
+      const saveBtn = document.getElementById('modalSaveBtn');
+      const payload = {
+        title:       document.getElementById('editTitle').value.trim(),
+        year:        parseInt(document.getElementById('editYear').value),
+        size:        document.getElementById('editSize').value.trim(),
+        is_selected: document.getElementById('editSelected').checked,
+        is_visible:  document.getElementById('editVisible').checked,
+        src:         document.getElementById('editSrc').value.trim(),
+        hq_src:      document.getElementById('editHqSrc').value.trim(),
+      };
+
+      if (!payload.title) { showToast('제목을 입력하세요.', 'error'); return; }
+
+      // 새 이미지가 선택되었으면 업로드
+      if (pendingFile) {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="spinner"></span>';
+        try {
+          // For new artworks, use a default series; for edits, use existing
+          const series = id ? (allWorks.find(x => String(x.id) === id)?.series || 'uncategorized') : 'uncategorized';
+          const imageUrl = await uploadImage(pendingFile, series);
+          payload.src = imageUrl;
+          payload.hq_src = imageUrl; // 같은 이미지 사용 (원본 해상도)
+          uploadStatus.textContent = '업로드 완료!';
+          uploadStatus.className = 'upload-status done';
+        } catch (e) {
+          showToast('이미지 업로드 실패: ' + e.message, 'error');
+          uploadStatus.textContent = '업로드 실패: ' + e.message;
+          uploadStatus.className = 'upload-status error';
+          saveBtn.disabled = false;
+          saveBtn.textContent = '저장';
+          return;
+        }
+      }
+
+      // 새 작품 추가 시 이미지 필수
+      if (!id && !payload.src) {
+        showToast('이미지를 선택하세요.', 'error');
+        saveBtn.disabled = false;
+        saveBtn.textContent = '저장';
+        return;
+      }
+
+      let error;
+      if (id) {
+        ({ error } = await sb.from('artworks').update(payload).eq('id', id));
+      } else {
+        ({ error } = await sb.from('artworks').insert(payload));
+      }
+
+      saveBtn.disabled = false;
+      saveBtn.textContent = '저장';
+
+      if (error) {
+        showToast('저장 실패: ' + error.message, 'error');
+        return;
+      }
+
+      pendingFile = null;
+      workModal.classList.remove('open');
+      showToast(id ? '수정 완료!' : '추가 완료!');
+      loadWorks();
+    });
+
+    // Delete confirm
+    document.getElementById('deleteConfirmBtn').addEventListener('click', async () => {
+      const id = document.getElementById('deleteId').value;
+      const { error } = await sb.from('artworks').delete().eq('id', id);
+      if (error) {
+        showToast('삭제 실패: ' + error.message, 'error');
+        return;
+      }
+      deleteModal.classList.remove('open');
+      showToast('삭제 완료!');
+      loadWorks();
+    });
+
+    // Modal cancel
+    document.getElementById('modalCancelBtn').addEventListener('click', () => workModal.classList.remove('open'));
+    document.getElementById('deleteCancelBtn').addEventListener('click', () => deleteModal.classList.remove('open'));
+
+    // Close modals on overlay click
+    workModal.addEventListener('click', (e) => { if (e.target === workModal) workModal.classList.remove('open'); });
+    deleteModal.addEventListener('click', (e) => { if (e.target === deleteModal) deleteModal.classList.remove('open'); });
+
+    // ═══════════════════════════════════════
+    // PHOTO UPLOAD (About panel)
+    // ═══════════════════════════════════════
+    const photoUploadArea = document.getElementById('photoUploadArea');
+    const photoPreview = document.getElementById('photoPreview');
+    const photoPlaceholder = document.getElementById('photoPlaceholder');
+    const photoStatus = document.getElementById('photoStatus');
+    const photoFile = document.getElementById('photoFile');
+    let pendingPhotoFile = null;
+
+    photoUploadArea.addEventListener('click', () => photoFile.click());
+    photoUploadArea.addEventListener('dragover', (e) => { e.preventDefault(); photoUploadArea.classList.add('dragover'); });
+    photoUploadArea.addEventListener('dragleave', () => photoUploadArea.classList.remove('dragover'));
+    photoUploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      photoUploadArea.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) handlePhotoSelect(file);
+    });
+    photoFile.addEventListener('change', (e) => {
+      if (e.target.files[0]) handlePhotoSelect(e.target.files[0]);
+    });
+
+    function handlePhotoSelect(file) {
+      pendingPhotoFile = file;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        photoPreview.src = e.target.result;
+        photoPreview.style.display = 'block';
+        photoPlaceholder.style.display = 'none';
+        photoStatus.textContent = file.name + ' (' + (file.size / 1024).toFixed(0) + 'KB) — 저장 시 업로드됩니다';
+        photoStatus.className = 'upload-status';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function resetPhotoUpload() {
+      pendingPhotoFile = null;
+      photoFile.value = '';
+      photoPreview.style.display = 'none';
+      photoPlaceholder.style.display = 'flex';
+      photoStatus.textContent = '';
+      photoStatus.className = 'upload-status';
+    }
+
+    async function uploadPhotoToStorage(file) {
+      const safeName = file.name.replace(/[^a-zA-Z0-9가-힣.\-_]/g, '_');
+      const path = `about/artist-photo-${Date.now()}.jpg`;
+
+      photoStatus.textContent = '업로드 중...';
+      photoStatus.className = 'upload-status uploading';
+
+      const { data, error } = await sb.storage
+        .from('artworks')
+        .upload(path, file, { cacheControl: '3600', upsert: false });
+
+      if (error) throw error;
+
+      const { data: urlData } = sb.storage.from('artworks').getPublicUrl(path);
+      return urlData.publicUrl;
+    }
+
+    document.getElementById('savePhotoBtn').addEventListener('click', async () => {
+      const saveBtn = document.getElementById('savePhotoBtn');
+
+      if (!pendingPhotoFile && !photoPreview.src) {
+        showToast('사진을 선택하세요.', 'error');
+        return;
+      }
+
+      if (pendingPhotoFile) {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="spinner"></span>';
+        try {
+          const photoUrl = await uploadPhotoToStorage(pendingPhotoFile);
+          const error = await upsertAbout('artist_photo', photoUrl);
+          if (error) {
+            showToast('저장 실패: ' + error.message, 'error');
+            saveBtn.disabled = false;
+            saveBtn.textContent = '사진 저장';
+            return;
+          }
+          photoStatus.textContent = '업로드 완료!';
+          photoStatus.className = 'upload-status done';
+          pendingPhotoFile = null;
+          showToast('사진이 저장되었습니다!');
+        } catch (e) {
+          showToast('이미지 업로드 실패: ' + e.message, 'error');
+          photoStatus.textContent = '업로드 실패: ' + e.message;
+          photoStatus.className = 'upload-status error';
+          saveBtn.disabled = false;
+          saveBtn.textContent = '사진 저장';
+        }
+      } else {
+        showToast('새 사진을 선택하여 업로드하세요.', 'error');
+      }
+    });
+
+    // ═══════════════════════════════════════
+    // EXHIBITIONS (About panel)
+    // ═══════════════════════════════════════
+    let exhData = { solo: {}, group: {} };
+    let exhCurrentType = 'solo';
+
+    function renderExhibitions(type) {
+      if (type) exhCurrentType = type;
+      document.querySelectorAll('.exh-type-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.type === exhCurrentType);
+      });
+
+      const exhList = document.getElementById('exhList');
+      const data = exhData[exhCurrentType] || {};
+      const years = Object.keys(data).sort((a, b) => b - a);
+
+      if (years.length === 0) {
+        exhList.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">등록된 ' + (exhCurrentType === 'solo' ? '개인전' : '단체전') + '이 없습니다.</p>';
+        return;
+      }
+
+      exhList.innerHTML = years.map(year => {
+        const entries = data[year] || [];
+        return `
+          <div class="exh-year-group">
+            <div class="exh-year-label">${year}</div>
+            <div class="exh-items">
+              ${entries.map((entry, idx) => `
+                <div class="exh-item">
+                  <input class="form-input exh-edit-input" value="${esc(entry)}" data-year="${year}" data-idx="${idx}" style="flex:1;padding:4px 8px;font-size:13px;" />
+                  <button class="exh-del" data-year="${year}" data-idx="${idx}" title="삭제">×</button>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // 수정 핸들러 — input 변경 시 데이터 업데이트
+      exhList.querySelectorAll('.exh-edit-input').forEach(input => {
+        input.addEventListener('change', () => {
+          const year = input.dataset.year;
+          const idx = parseInt(input.dataset.idx);
+          if (exhData[exhCurrentType][year]) {
+            exhData[exhCurrentType][year][idx] = input.value.trim();
+          }
+        });
+      });
+
+      // 삭제 핸들러
+      exhList.querySelectorAll('.exh-del').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const year = btn.dataset.year;
+          const idx = parseInt(btn.dataset.idx);
+          if (exhData[exhCurrentType][year]) {
+            exhData[exhCurrentType][year].splice(idx, 1);
+            if (exhData[exhCurrentType][year].length === 0) delete exhData[exhCurrentType][year];
+          }
+          renderExhibitions();
+        });
+      });
+    }
+
+    document.querySelectorAll('.exh-type-btn').forEach(btn => {
+      btn.addEventListener('click', () => renderExhibitions(btn.dataset.type));
+    });
+
+    // 추가 — 현재 활성 탭(solo/group)에 추가
+    document.getElementById('addExhBtn').addEventListener('click', () => {
+      const year = document.getElementById('exhYear').value.trim();
+      const entry = document.getElementById('exhEntry').value.trim();
+
+      if (!year || !entry) {
+        showToast('연도와 전시 내용을 입력하세요.', 'error');
+        return;
+      }
+
+      if (!exhData[exhCurrentType][year]) {
+        exhData[exhCurrentType][year] = [];
+      }
+      exhData[exhCurrentType][year].unshift(entry); // 맨 앞에 추가
+      document.getElementById('exhEntry').value = '';
+      renderExhibitions();
+      showToast((exhCurrentType === 'solo' ? '개인전' : '단체전') + '에 추가되었습니다');
+    });
+
+    document.getElementById('saveExhBtn').addEventListener('click', async () => {
+      const e1 = await upsertAbout('exhibitions_solo', JSON.stringify(exhData.solo));
+      const e2 = await upsertAbout('exhibitions_group', JSON.stringify(exhData.group));
+
+      if (e1 || e2) { showToast('저장 실패: ' + (e1 || e2).message, 'error'); return; }
+      showToast('전시 이력 저장 완료!');
+    });
+
+    // ═══════════════════════════════════════
+    // DEFAULT EXHIBITION DATA (from about.html)
+    // ═══════════════════════════════════════
+    const DEFAULT_SOLO = {
+      2023: ['5회 개인전 — 확장전 (한빛갤러리, 울산)'],
+      2020: ['4회 개인전 — 기억의 공간展 (한빛갤러리, 울산)'],
+      2014: ['3회 개인전 (울산, 한빛갤러리)', '부스전 (현대예술관, 울산)'],
+      2011: ['부스전 (문화예술회관, 대구)'],
+      2008: ['2회 개인전 (울산, ck갤러리)'],
+      2005: ['1회 개인전 (울산, 현대아트갤러리)'],
+    };
+
+    const DEFAULT_GROUP = {
+      2025: [
+        '소요유전 (꽃마루갤러리, 울산시교육청)',
+        '표상회 정기전',
+        '표상회 소품전 (수성문화원)',
+      ],
+      2024: [
+        '표상회 정기전',
+        '표상회 소품전',
+      ],
+      2023: [
+        '5회 개인전 (한빛갤러리, 울산)',
+        '표상회 정기전',
+        '표상회 소품전',
+      ],
+      2022: [
+        '표상회 5월의 선물전 (디아트갤러리, 대구)',
+        '봄날을 걷다 (무닉갤러리 기획 초대전, 대구)',
+      ],
+      2021: ['표상회 정기전 (봉산문화회관, 대구)'],
+      2020: [
+        '표상회 패션콜라보전 (벡스코, 대구)',
+        '4회 개인전 (한빛갤러리, 울산)',
+      ],
+      2019: [
+        '표상회 정기전 (문화예술회관, 대구)',
+        '표상회 초대전 (웃는얼굴아트센터, 대구)',
+      ],
+      2018: [
+        '표상회 정기전 (문화예술회관, 대구)',
+        '표상회 소품전 (달성군청 참꽃갤러리, 대구)',
+      ],
+      2017: [
+        '표상회 소품전 (혼다아트라운지, 대구)',
+        '울산·제주 미술교류전 (문화예술회관, 울산)',
+        '울산중견작가전 (가다갤러리기획, 울산)',
+        '표상회 정기전 (문화예술회관, 대구)',
+      ],
+      2016: [
+        '표상회 정기전 (문화예술회관, 대구)',
+        '가다미니아트페어 (가다갤러리, 울산)',
+        '12인의 모색전 (가다갤러리 기획, 울산)',
+        '이화에 월백하고전 (가암갤러리 봄기획, 청도)',
+        '봄봄봄전 (가암갤러리 신년기획, 청도)',
+        '구상과 추상의 아우름전 (가다갤러리 신년기획, 울산)',
+      ],
+      2015: [
+        '표상회 소품전 (비투갤러리, 대구)',
+        '선, 색, 면 전 (한빛갤러리 기획, 울산)',
+        '표상회, 익산미협 교류전 (대구, 문화예술회관)',
+      ],
+      2014: [
+        '한국구상미술 초대전 (울산, 문화예술회관)',
+        '표상회 정기전 (대구, 문화예술회관)',
+        '표상회 소품전 (대구, S&G갤러리)',
+      ],
+      2013: [
+        '현대미술에서의 사람전 II (울산, 문화예술회관)',
+        '표상회 소품전 (대구, DGB갤러리)',
+        '표상회 정기전 (대구, 문화예술회관)',
+      ],
+      2012: [
+        '새봄맞이 내안의 공간 기획전 (울산, 시청갤러리)',
+        'S&G개관기념 소품전 (대구, S&G갤러리)',
+        '한·중 교류전 (울산, 문화예술회관)',
+        '표상회 정기전 (대구, S&G갤러리)',
+        '현대미술에서의 사람전 (울산, 문화예술회관)',
+      ],
+      2011: [
+        '표상회 부스전 (대구, 문화예술회관)',
+        '표상회 소품전 (대구, DGB갤러리)',
+        '울산인물작가회전 (울산, 문화예술회관)',
+      ],
+      2010: [
+        '표상회 정기전 (대구, 문화예술회관)',
+        '울산예술발전기금마련전 (울산, 문화예술회관)',
+        '울산인물작가회전 (울산, ck갤러리)',
+      ],
+      2009: [
+        'ck갤러리 개관기념 초대전 (울산, ck갤러리)',
+        '울산인물작가회전 (울산, 갤러리H)',
+        '표상회 정기전 (대구, 문화예술회관)',
+        '2008 2회 개인전 (울산, ck갤러리)',
+        '네사람 동행전 (울산, 갤러리H)',
+        '울산인물작가회전 (울산, 갤러리H)',
+        '표상회 정기전 (대구, 문화예술회관)',
+      ],
+      2008: [
+        '표상회 정기전 (대구, 문화예술회관)',
+        '표상회 소품전 (대구, DGB갤러리)',
+      ],
+      2007: [
+        '구상회화제 (대구, 시민회관)',
+        '표상회 정기전 (대구, 문화예술회관)',
+        '표상회 소품전 (울산, 갤러리쁘라도)',
+        '울산구상작가회 100호전 (울산, 문화예술회관)',
+        '1세기전 (대구, 문화예술회관)',
+        '아름다운 인체여행 누드전 (울산, 갤러리H)',
+      ],
+      2006: [
+        '울산구상작가회 200호전 (울산, 문화예술회관)',
+        '울산인물작가회전 (울산, 갤러리H)',
+        '표상회 정기전 (대구, 문화예술회관)',
+        '표상회 소품전 (대구, 대백프라자갤러리)',
+      ],
+      2005: [
+        '1회 개인전 (울산, 현대아트갤러리)',
+        '대한민국 국제환경미술 엑스포 (서울, 코엑스컨벤션홀)',
+        '울산인물작가회 창립전 (울산, 갤러리H)',
+        '청년작가회 테마전 (울산, 한마음갤러리)',
+        '울산, 포항, 경주 구상작가회 크로스전 (울산, 문화예술회관)',
+        '울산, 부산, 창원 청년작가 크로스전 (울산, 문화예술회관)',
+        '1세기전 (대구, 문화예술회관)',
+        '표상회 정기전 (대구, 문화예술회관)',
+        '울산구상작가회 정기전 (울산, 문화예술회관)',
+      ],
+      2004: [
+        '전시장 가는 길 (울산, 문화예술회관 상설기획)',
+        '청년작가회 릴레이전 (울산, 한마음갤러리)',
+        '1세기전 (대구, 문화예술회관)',
+        '표상회 정기전 (대구, 문화예술회관)',
+        '표상회 소품전 (대구, 시민회관)',
+        '울산구상작가회 정기전 (울산, 한마음갤러리)',
+      ],
+      2003: [
+        '표상회 정기전 (대구, 문화예술회관)',
+        '표상회 소품전 (포항, 작은행복갤러리)',
+        '울산구상작가회 정기전 (울산, 현대아트갤러리)',
+      ],
+      2002: [
+        '울산의 태화강 일백리전 (울산, 문화예술회관)',
+        '울산문화예술회관 4전시장 개관기념전 (울산, 문화예술회관)',
+        '남부지역 구상회화제 (울산, 문화예술회관)',
+        '울산구상작가회 정기전 (울산, 현대아트갤러리)',
+        '표상회 소품전 (대구, 갤러리쁘라도)',
+        '표상회 정기전 (대구, 문화예술회관)',
+      ],
+      2001: [
+        '아름다운 자연, 이미지전 (울산, 문화예술회관)',
+        '울산의 산하 연작전 (울산, 문화예술회관)',
+        '도자기 그림전 (대구, 칠곡동아갤러리)',
+        '표상회 정기전 (대구, 문화예술회관)',
+      ],
+      2000: [
+        '가창성당 건립 기금전 (대구, 대백프라자갤러리)',
+        '중·남부 7개 시·도 미술단체교류전 (광주, 대구, 울산)',
+        '대왕암에서 간절곶까지전 (울산, 현대예술관)',
+        '새천년 청년작가초대전 (부산 타워갤러리, 울산 현대아트갤러리)',
+        '울산구상작가회 창립전 (울산, 현대아트갤러리)',
+        '2000 울산, 시각예술전 (울산, 문화예술회관)',
+        '표상회 정기전 (대구, 문화예술회관)',
+        '표상회 소품전 (대구, 대백프라자갤러리)',
+      ],
+      1999: [
+        '표상회 울산순회전 (울산, 문화예술회관)',
+        '표상회 소품전 (대구, 동아갤러리)',
+        '울산청년작가회 초대전 (부산, 갤러리메사)',
+      ],
+      1998: [
+        '영·호남 청년작가 교류전 (울산, 현대예술관)',
+        '표상회 정기전 (대구, 문화예술회관)',
+        '표상회 소품전 (대구, 대구은행갤러리)',
+        '울산청년작가회전 (울산, 현대예술관)',
+      ],
+      1997: [
+        '1990년대 울산미술 단면전 (울산, 아트리움 갤러리)',
+        '표상회 정기전 (대구, 문화예술회관)',
+        '울산청년작가회전 (울산, 한마음갤러리)',
+      ],
+      1996: [
+        '표상회 정기전 (대구, 문화예술회관)',
+        '표상회 소품전 (대구, 수성동아갤러리)',
+        '울산청년작가회전 (울산, 한마음갤러리)',
+      ],
+      1995: [
+        '표상회 정기전 (대구, 문화예술회관)',
+        '표상회 소품전 (대구, 동아미술관)',
+      ],
+      1994: [
+        '대구·포항 청년작가초대전 (대구, 포항 대백갤러리)',
+        '표상회정기전 (대구, 대백프라자갤러리)',
+        '표상회 소품전 (대구, 대백프라자갤러리)',
+      ],
+      1993: [
+        '신세대기획전 (대구, 단공갤러리)',
+        '표상회 일본 초대전 (일본, 도요하시 조일화랑)',
+        '표상회 소품전 (대구, 벽아미술관. 에스갤러리)',
+        '한국청년구상작가회전 (대구, 벽아미술관)',
+      ],
+      1992: [
+        '표상회 창립전 (대구, 동아갤러리)',
+        '표상회 소품전 (대구, 앞산화랑)',
+        '한국청년구상작가회전 (서울, 청학미술관)',
+      ],
+      1991: [
+        'Independent전 (과천, 국립현대미술관)',
+        '전국신진작가초대전 (서울, 청년미술관)',
+      ],
+    };
+
+    // ═══════════════════════════════════════
+    // ABOUT — LOAD & SAVE
+    // ═══════════════════════════════════════
+    // about_content는 key-value 구조: { key: string, value: string }
+    async function loadAbout() {
+      const { data } = await sb
+        .from('about_content')
+        .select('*');
+
+      const map = {};
+      if (data) {
+        data.forEach(row => { map[row.key] = row.value; });
+      }
+
+      // Bio — 'bio' 키 먼저 확인, 없으면 bio_p1 + bio_p2 폴백
+      if (map['bio']) {
+        document.getElementById('bioText').value = map['bio'];
+      } else if (map['bio_p1'] || map['bio_p2']) {
+        const combined = [map['bio_p1'] || '', map['bio_p2'] || ''].filter(Boolean).join('\n\n');
+        document.getElementById('bioText').value = combined;
+      }
+
+      // Artist photo — DB에서 로드, 없으면 로컬 기본값
+      if (map['artist_photo']) {
+        photoPreview.src = map['artist_photo'];
+        photoPreview.style.display = 'block';
+        photoPlaceholder.style.display = 'none';
+      } else {
+        photoPreview.src = 'about image/jinhokim.jpeg';
+        photoPreview.style.display = 'block';
+        photoPlaceholder.style.display = 'none';
+        photoStatus.textContent = '현재 사진 (새 사진을 업로드하면 교체됩니다)';
+      }
+
+      // Education
+      document.getElementById('eduEducation').value = map['education'] || '';
+      document.getElementById('eduAffiliation').value = map['affiliation'] || '';
+      document.getElementById('eduCurrent').value = map['current_position'] || '';
+
+      // Exhibitions — DB에서 로드, 없으면 기본값 사용
+      exhData = {
+        solo: {},
+        group: {}
+      };
+      if (map['exhibitions_solo']) {
+        try {
+          exhData.solo = JSON.parse(map['exhibitions_solo']);
+        } catch (e) {
+          exhData.solo = DEFAULT_SOLO;
+        }
+      } else {
+        exhData.solo = DEFAULT_SOLO;
+      }
+
+      if (map['exhibitions_group']) {
+        try {
+          exhData.group = JSON.parse(map['exhibitions_group']);
+        } catch (e) {
+          exhData.group = DEFAULT_GROUP;
+        }
+      } else {
+        exhData.group = DEFAULT_GROUP;
+      }
+
+      renderExhibitions('solo');
+    }
+
+    async function upsertAbout(key, value) {
+      // 기존 row 확인
+      const { data: existing } = await sb
+        .from('about_content')
+        .select('id')
+        .eq('key', key)
+        .limit(1)
+        .single();
+
+      let error;
+      if (existing) {
+        ({ error } = await sb.from('about_content').update({ value, updated_at: new Date().toISOString() }).eq('key', key));
+      } else {
+        ({ error } = await sb.from('about_content').insert({ key, value }));
+      }
+      return error;
+    }
+
+    document.getElementById('saveBioBtn').addEventListener('click', async () => {
+      const bioText = document.getElementById('bioText').value;
+      const error = await upsertAbout('bio', bioText);
+
+      if (error) { showToast('저장 실패: ' + error.message, 'error'); return; }
+      showToast('소개 글 저장 완료!');
+    });
+
+    document.getElementById('saveEduBtn').addEventListener('click', async () => {
+      const e1 = await upsertAbout('education', document.getElementById('eduEducation').value);
+      const e2 = await upsertAbout('affiliation', document.getElementById('eduAffiliation').value);
+      const e3 = await upsertAbout('current_position', document.getElementById('eduCurrent').value);
+
+      if (e1 || e2 || e3) { showToast('저장 실패: ' + (e1 || e2 || e3).message, 'error'); return; }
+      showToast('학력/소속 저장 완료!');
+    });
+
+    // ═══════════════════════════════════════
+    // SETTINGS — PASSWORD CHANGE
+    // ═══════════════════════════════════════
+    document.getElementById('changePwBtn').addEventListener('click', async () => {
+      const pw = document.getElementById('newPw').value;
+      const confirm = document.getElementById('confirmPw').value;
+
+      if (pw.length < 6) { showToast('비밀번호는 6자 이상이어야 합니다.', 'error'); return; }
+      if (pw !== confirm) { showToast('비밀번호가 일치하지 않습니다.', 'error'); return; }
+
+      const { error } = await sb.auth.updateUser({ password: pw });
+      if (error) { showToast('변경 실패: ' + error.message, 'error'); return; }
+
+      showToast('비밀번호가 변경되었습니다!');
+      document.getElementById('newPw').value = '';
+      document.getElementById('confirmPw').value = '';
+    });
+  </script>
+</body>
+</html>

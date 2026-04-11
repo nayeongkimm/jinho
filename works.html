@@ -14,6 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Asul:wght@400;700&display=block" as="style" />
   <link href="https://fonts.googleapis.com/css2?family=Asul:wght@400;700&display=block" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     @font-face {
       font-family: 'Pretendard';
@@ -749,70 +750,47 @@
 
   <script>
     // ═══════════════════════════════════════
-    // ARTWORK DATA
+    // SUPABASE CONFIG
     // ═══════════════════════════════════════
-    const ALL_WORKS = [
-      // 사랑비 시리즈
-      { src: 'artworks/web/sarangbi/sarangbi-2010.jpg', title: '사랑비', year: 2010, size: '', series: '사랑비' },
-      { src: 'artworks/web/sarangbi/sarangbi3-2011.jpg', title: '사랑비3', year: 2011, size: '', series: '사랑비' },
-      { src: 'artworks/web/sarangbi/sarangbi4-2011.jpg', title: '사랑비4', year: 2011, size: '', series: '사랑비' },
-      { src: 'artworks/web/sarangbi/sarangbi-2012.jpg', title: '사랑비', year: 2012, size: '', series: '사랑비' },
-      { src: 'artworks/web/sarangbi/sarangbi-2013.jpg', title: '사랑비', year: 2013, size: '', series: '사랑비' },
-      { src: 'artworks/web/sarangbi/sarangbi-2014.jpg', title: '사랑비', year: 2014, size: '', series: '사랑비' },
-      { src: 'artworks/web/sarangbi/sarangbi-2015.jpg', title: '사랑비', year: 2015, size: '', series: '사랑비' },
-      { src: 'artworks/web/sarangbi/sarangbi-6ho-2015.jpg', title: '사랑비', year: 2015, size: '6호', series: '사랑비' },
-      { src: 'artworks/web/sarangbi/sarangbi47-2016.jpg', title: '사랑비47', year: 2016, size: '', series: '사랑비' },
-      { src: 'artworks/web/sarangbi/sarangbi50-2016.jpg', title: '사랑비50', year: 2016, size: '', series: '사랑비' },
-      { src: 'artworks/web/sarangbi/sarangbi52-2017.jpg', title: '사랑비52', year: 2017, size: '50호', series: '사랑비' },
-      { src: 'artworks/web/sarangbi/sarangbi53-2017.jpg', title: '사랑비53', year: 2017, size: '4호', series: '사랑비' },
-      { src: 'artworks/web/sarangbi/sarangbi54-2017.jpg', title: '사랑비54', year: 2017, size: '4호', series: '사랑비' },
-      { src: 'artworks/web/sarangbi/sarangbi59-2018.jpg', title: '사랑비59', year: 2018, size: '10호', series: '사랑비' },
-      { src: 'artworks/web/sarangbi/sarangbi60-2018.jpg', title: '사랑비60', year: 2018, size: '20호', series: '사랑비' },
-      { src: 'artworks/web/sarangbi/sarangbi61-2019.jpg', title: '사랑비61', year: 2019, size: '50호', series: '사랑비' },
-      { src: 'artworks/web/sarangbi/sarangbi62-2019.jpg', title: '사랑비62', year: 2019, size: '6호', series: '사랑비' },
-      // 봄봄 시리즈
-      { src: 'artworks/web/bombom/early-spring-2020.jpg', title: '이른 봄', year: 2020, size: '8호', series: '봄봄' },
-      { src: 'artworks/web/bombom/petal-spring-2020.jpg', title: '꽃잎 끝에 걸린 봄날', year: 2020, size: '10호', series: '봄봄' },
-      { src: 'artworks/web/bombom/plum-spring-2020.jpg', title: '매화꽃에 걸린 봄', year: 2020, size: '6호', series: '봄봄' },
-      { src: 'artworks/web/bombom/wife-space-2020.jpg', title: '아내의 공간', year: 2020, size: '10호', series: '봄봄' },
-      { src: 'artworks/web/bombom/wind-spring-2020.jpg', title: '바람에 날려온 봄', year: 2020, size: '20호', series: '봄봄' },
-      { src: 'artworks/web/bombom/waiting-2021.jpg', title: '기다림', year: 2021, size: '20호', series: '봄봄' },
-      { src: 'artworks/web/bombom/bombom-2021.jpg', title: '봄봄', year: 2021, size: '50호', series: '봄봄' },
-      // 노닐다 시리즈
-      { src: 'artworks/web/nonilda/bombom-2022.jpg', title: '봄봄', year: 2022, size: '8호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/bombom2-2022.jpg', title: '봄봄2', year: 2022, size: '10호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/bombom4-2022.jpg', title: '봄봄4', year: 2022, size: '40호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/bombom5-2022.jpg', title: '봄봄5', year: 2022, size: '10호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/nonilda-2023.jpg', title: '노닐다', year: 2023, size: '40호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/nonilda3-2023.jpg', title: '노닐다3', year: 2023, size: '10호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/spring-shadow-2023.jpg', title: '봄 그림자', year: 2023, size: '20호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/bombom6-2023.jpg', title: '봄봄6', year: 2023, size: '40호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/bombom7-2023.jpg', title: '봄봄7', year: 2023, size: '10호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/bombom8-2023.jpg', title: '봄봄8', year: 2023, size: '20호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/bombom9-2023.jpg', title: '봄봄9', year: 2023, size: '20호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/flow-2023.jpg', title: '흐름', year: 2023, size: '20호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/passion-2023.jpg', title: '열정', year: 2023, size: '20호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/nonilda4-2023.jpg', title: '노닐다4', year: 2023, size: '20호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/nonilda5-2024.jpg', title: '노닐다5', year: 2024, size: '50호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/nonilda7-2024.jpg', title: '노닐다7', year: 2024, size: '50호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/spring-day2-2024.jpg', title: '봄날2', year: 2024, size: '10호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/spring-day3-2024.jpg', title: '봄날3', year: 2024, size: '20호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/passion-2024.jpg', title: '열정', year: 2024, size: '10호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/nonilda10-2025.jpg', title: '노닐다10', year: 2025, size: '6호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/nonilda11-2025.jpg', title: '노닐다11', year: 2025, size: '6호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/nonilda13-2025.jpg', title: '노닐다13', year: 2025, size: '6호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/nonilda14-2025.jpg', title: '노닐다14', year: 2025, size: '6호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/nonilda15-2025.jpg', title: '노닐다15', year: 2025, size: '50호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/nonilda17-2025.jpg', title: '노닐다17', year: 2025, size: '50호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/nonilda18-2025.jpg', title: '노닐다18', year: 2025, size: '10호', series: '노닐다' },
-      { src: 'artworks/web/nonilda/nonilda9-2025.jpg', title: '노닐다9', year: 2025, size: '6호', series: '노닐다' },
-    ];
-
-    // Selected Works — 각 시리즈에서 대표작 선별
-    const SELECTED_INDICES = [0, 7, 15, 18, 25, 30, 35, 46, 47, 48];
+    const SUPABASE_URL = 'https://tcjoluusbvyqlwexnfkw.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjam9sdXVzYnZ5cWx3ZXhuZmt3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDA3NzksImV4cCI6MjA5MTQ3Njc3OX0.bh-iNCetM7JZ4Z4kxC83XvFTU8vY_qQSbo7SD8rLB5w';
 
     // ═══════════════════════════════════════
-    // FILTER TABS + YEAR DROPDOWN
+    // ARTWORK DATA (Supabase에서 로드, 실패 시 빈 배열)
+    // ═══════════════════════════════════════
+    let ALL_WORKS = [];
+    let SELECTED_WORKS = [];
+
+    async function loadArtworks() {
+      try {
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const { data, error } = await sb
+          .from('artworks')
+          .select('*')
+          .eq('is_visible', true)
+          .order('sort_order', { ascending: true });
+
+        if (error) throw error;
+
+        ALL_WORKS = data.map(d => ({
+          src: d.src,
+          hq_src: d.hq_src,
+          title: d.title,
+          year: d.year,
+          size: d.size || '',
+          series: d.series,
+          is_selected: d.is_selected
+        }));
+        SELECTED_WORKS = ALL_WORKS.filter(w => w.is_selected);
+      } catch (e) {
+        console.warn('Supabase 로딩 실패, 빈 배열 사용:', e);
+        ALL_WORKS = [];
+        SELECTED_WORKS = [];
+      }
+    }
+
+    // ═══════════════════════════════════════
+    // 페이지 초기화
     // ═══════════════════════════════════════
     const gridEl = document.getElementById('artworkGrid');
     const filterGroup = document.getElementById('filterGroup');
@@ -821,26 +799,45 @@
     const yearTrigger = document.getElementById('yearTrigger');
     const yearMenu = document.getElementById('yearMenu');
 
-    // 개별 연도 드롭다운 아이템 생성 (작품이 있는 연도만, 최신순)
-    const years = [...new Set(ALL_WORKS.map(w => w.year))].sort((a, b) => b - a);
-    years.forEach(year => {
-      const count = ALL_WORKS.filter(w => w.year === year).length;
-      const item = document.createElement('button');
-      item.className = 'dropdown-item';
-      item.dataset.year = year;
-      item.innerHTML = `${year} <span class="count">${count}</span>`;
-      yearMenu.appendChild(item);
-    });
+    function initFilters() {
+      // 연도 드롭다운 아이템 생성 (작품이 있는 연도만, 최신순)
+      yearMenu.innerHTML = '';
+      const years = [...new Set(ALL_WORKS.map(w => w.year))].sort((a, b) => b - a);
+      years.forEach(year => {
+        const count = ALL_WORKS.filter(w => w.year === year).length;
+        const item = document.createElement('button');
+        item.className = 'dropdown-item';
+        item.dataset.year = year;
+        item.innerHTML = `${year} <span class="count">${count}</span>`;
+        yearMenu.appendChild(item);
+      });
 
-    // 탭 카운트 표시
-    filterTabs.forEach(tab => {
-      const filter = tab.dataset.filter;
-      let count;
-      if (filter === 'selected') count = SELECTED_INDICES.length;
-      else if (filter === 'all') count = ALL_WORKS.length;
-      else return;
-      tab.textContent = `${tab.textContent} (${count})`;
-    });
+      // 탭 카운트 표시
+      filterTabs.forEach(tab => {
+        const filter = tab.dataset.filter;
+        let count;
+        if (filter === 'selected') count = SELECTED_WORKS.length;
+        else if (filter === 'all') count = ALL_WORKS.length;
+        else return;
+        const label = filter === 'selected' ? 'Selected Works' : 'All';
+        tab.textContent = `${label} (${count})`;
+      });
+
+      // 드롭다운 아이템 클릭 이벤트 재바인딩
+      yearMenu.querySelectorAll('.dropdown-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const year = item.dataset.year;
+          clearAllActive();
+          item.classList.add('active');
+          yearTrigger.classList.add('active');
+          yearTrigger.innerHTML = `${year} ${arrowSVG}`;
+          yearDropdown.classList.remove('open');
+          renderGrid(`year-${year}`);
+          scrollToGrid();
+        });
+      });
+    }
 
     // 모든 활성 상태 초기화
     function clearAllActive() {
@@ -877,20 +874,7 @@
       yearDropdown.classList.toggle('open');
     });
 
-    // 드롭다운 아이템 클릭 (개별 연도)
-    yearMenu.querySelectorAll('.dropdown-item').forEach(item => {
-      item.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const year = item.dataset.year;
-        clearAllActive();
-        item.classList.add('active');
-        yearTrigger.classList.add('active');
-        yearTrigger.innerHTML = `${year} ${arrowSVG}`;
-        yearDropdown.classList.remove('open');
-        renderGrid(`year-${year}`);
-        scrollToGrid();
-      });
-    });
+    // 드롭다운 아이템 클릭은 initFilters()에서 바인딩
 
     // 외부 클릭 시 드롭다운 닫기
     document.addEventListener('click', () => {
@@ -933,15 +917,16 @@
     let currentWorks = [];  // 현재 표시 중인 작품 목록
     let currentIndex = 0;   // 현재 라이트박스에서 보고 있는 인덱스
 
-    // 웹용 경로를 고화질 경로로 변환 (artworks/web/x/y.jpg → artworks/web/hq/x/y.jpg)
-    function toHQ(src) {
-      return src.replace('artworks/web/', 'artworks/web/hq/');
+    // 고화질 경로: DB의 hq_src 우선 사용, 없으면 자동 변환
+    function toHQ(work) {
+      if (work.hq_src) return work.hq_src;
+      return work.src.replace('artworks/web/', 'artworks/web/hq/');
     }
 
     function showWork(index) {
       currentIndex = index;
       const work = currentWorks[index];
-      lbImg.src = toHQ(work.src);
+      lbImg.src = toHQ(work);
       lbImg.alt = work.title;
       lbTitle.textContent = work.title;
       lbMeta.textContent = work.size ? `${work.year}, ${work.size}` : `${work.year}`;
@@ -1001,7 +986,7 @@
     function renderGridFull(filter) {
       let works;
       if (filter === 'selected') {
-        works = SELECTED_INDICES.map(i => ALL_WORKS[i]);
+        works = [...SELECTED_WORKS];
       } else if (filter === 'all') {
         works = [...ALL_WORKS];
       } else if (filter.startsWith('year-')) {
@@ -1060,8 +1045,14 @@
 
     let renderGrid = renderGridFull;
 
-    // Initial render
-    renderGrid('selected');
+    // ═══════════════════════════════════════
+    // ASYNC INIT: Supabase에서 데이터 로드 후 렌더링
+    // ═══════════════════════════════════════
+    (async function init() {
+      await loadArtworks();
+      initFilters();
+      renderGrid('selected');
+    })();
 
     // ═══ Hamburger Menu ═══
     const hamburger = document.getElementById('hamburger');

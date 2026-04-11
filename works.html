@@ -314,13 +314,22 @@
     }
     .artwork-img-wrap {
       width: 100%;
-      background: var(--bg-card);
+      aspect-ratio: 1 / 1;
+      background: #FFFFFF;
+      border: 1px solid #F7F5F3;
+      background: #FFFFFF;
       overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .artwork-img-wrap img {
       display: block;
-      width: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
       height: auto;
+      object-fit: contain;
       transition: transform 0.4s ease;
     }
     .artwork-card:hover .artwork-img-wrap img {
@@ -352,6 +361,18 @@
     }
     .artwork-grid.single-view .artwork-card {
       gap: 14px;
+    }
+    .artwork-grid.single-view .artwork-img-wrap {
+      aspect-ratio: unset;
+      background: none;
+      border: none;
+      display: block;
+    }
+    .artwork-grid.single-view .artwork-img-wrap img {
+      width: 100%;
+      max-width: 100%;
+      max-height: unset;
+      height: auto;
     }
     .artwork-grid.single-view .artwork-img-wrap img {
       width: 100%;
@@ -528,7 +549,6 @@
     @media (max-width: 1023px) {
       .artwork-grid {
         grid-template-columns: repeat(3, 1fr);
-        gap: 50px 24px;
       }
       .filter-row {
         gap: 24px;

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sold Out 스타일 비교</title>
+  <link href="https://fonts.googleapis.com/css2?family=Asul:wght@400;700&display=block" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: 'Pretendard';
+      src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+      font-weight: 400; font-style: normal;
+    }
+    :root {
+      --font-en: 'Asul', Georgia, serif;
+      --font-ko: 'Pretendard', -apple-system, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #F5F5F5;
+      font-family: var(--font-ko);
+      padding: 40px;
+    }
+    h1 {
+      font-family: var(--font-en);
+      font-size: 24px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #888;
+      font-size: 14px;
+      margin-bottom: 40px;
+    }
+    .options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .option {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .option-label {
+      font-family: var(--font-en);
+      font-size: 14px;
+      color: #2563EB;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+    .option-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #eee;
+    }
+
+    /* ─── 공통 카드 ─── */
+    .card {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .card-number {
+      font-family: var(--font-en);
+      font-size: 12px;
+      color: #A19994;
+      letter-spacing: 0.96px;
+    }
+    .card-img-wrap {
+      position: relative;
+      overflow: hidden;
+    }
+    .card-img-wrap img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .card-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1A1A1A;
+    }
+    .card-meta {
+      font-size: 12px;
+      color: #A19994;
+    }
+
+    /* ═══ Option A: 반투명 오버레이 ═══ */
+    .overlay-sold {
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .overlay-sold span {
+      font-family: var(--font-en);
+      font-size: 16px;
+      font-weight: 700;
+      color: #1A1A1A;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    /* ═══ Option B: 제목 옆 작은 배지 ═══ */
+    .badge-sold {
+      display: inline-block;
+      font-family: var(--font-en);
+      font-size: 10px;
+      font-weight: 700;
+      color: #DC2626;
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      padding: 1px 6px;
+      border-radius: 3px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    /* ═══ Option C: 이미지 우측 하단 리본 ═══ */
+    .ribbon-sold {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      font-family: var(--font-en);
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      background: #1A1A1A;
+      padding: 3px 10px;
+      border-radius: 3px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 768px) {
+      .options { grid-template-columns: 1fr; gap: 24px; }
+      body { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Sold Out Style Options</h1>
+  <p class="subtitle">각 옵션을 비교해보세요. 마음에 드는 스타일을 알려주세요!</p>
+
+  <div class="options">
+    <!-- Option A -->
+    <div class="option">
+      <div class="option-label">OPTION A</div>
+      <div class="option-title">반투명 오버레이</div>
+      <div class="card">
+        <span class="card-number">01.</span>
+        <div class="card-img-wrap">
+          <img src="artworks/web/nonilda/bombom2-2022.jpg" alt="봄봄2" />
+          <div class="overlay-sold"><span>Sold</span></div>
+        </div>
+        <div class="card-info">
+          <span class="card-title">봄봄2</span>
+          <span class="card-meta">2022년, 10호</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option B -->
+    <div class="option">
+      <div class="option-label">OPTION B</div>
+      <div class="option-title">제목 옆 작은 배지</div>
+      <div class="card">
+        <span class="card-number">01.</span>
+        <div class="card-img-wrap">
+          <img src="artworks/web/nonilda/bombom2-2022.jpg" alt="봄봄2" />
+        </div>
+        <div class="card-info">
+          <span class="card-title">봄봄2 <span class="badge-sold">Sold</span></span>
+          <span class="card-meta">2022년, 10호</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option C -->
+    <div class="option">
+      <div class="option-label">OPTION C</div>
+      <div class="option-title">이미지 우측 하단 태그</div>
+      <div class="card">
+        <span class="card-number">01.</span>
+        <div class="card-img-wrap">
+          <img src="artworks/web/nonilda/bombom2-2022.jpg" alt="봄봄2" />
+          <div class="ribbon-sold">Sold</div>
+        </div>
+        <div class="card-info">
+          <span class="card-title">봄봄2</span>
+          <span class="card-meta">2022년, 10호</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

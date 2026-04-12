@@ -14,6 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Asul:wght@400;700&display=block" as="style" />
   <link href="https://fonts.googleapis.com/css2?family=Asul:wght@400;700&display=block" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     @font-face {
       font-family: 'Pretendard';
@@ -254,69 +255,41 @@
 
   <script>
     // ═══════════════════════════════════════
-    // DATA
+    // DATA — Supabase에서 공개 작품 로드
     // ═══════════════════════════════════════
-    const ALL_WORKS = [
-      // 사랑비 시리즈 (17)
-      { src: 'artworks/web/sarangbi/sarangbi-2010.jpg', title: '사랑비', year: 2010 },
-      { src: 'artworks/web/sarangbi/sarangbi3-2011.jpg', title: '사랑비3', year: 2011 },
-      { src: 'artworks/web/sarangbi/sarangbi4-2011.jpg', title: '사랑비4', year: 2011 },
-      { src: 'artworks/web/sarangbi/sarangbi-2012.jpg', title: '사랑비', year: 2012 },
-      { src: 'artworks/web/sarangbi/sarangbi-2013.jpg', title: '사랑비', year: 2013 },
-      { src: 'artworks/web/sarangbi/sarangbi-2014.jpg', title: '사랑비', year: 2014 },
-      { src: 'artworks/web/sarangbi/sarangbi-2015.jpg', title: '사랑비', year: 2015 },
-      { src: 'artworks/web/sarangbi/sarangbi-6ho-2015.jpg', title: '사랑비 6호', year: 2015 },
-      { src: 'artworks/web/sarangbi/sarangbi47-2016.jpg', title: '사랑비47', year: 2016 },
-      { src: 'artworks/web/sarangbi/sarangbi50-2016.jpg', title: '사랑비50', year: 2016 },
-      { src: 'artworks/web/sarangbi/sarangbi52-2017.jpg', title: '사랑비52', year: 2017 },
-      { src: 'artworks/web/sarangbi/sarangbi53-2017.jpg', title: '사랑비53', year: 2017 },
-      { src: 'artworks/web/sarangbi/sarangbi54-2017.jpg', title: '사랑비54', year: 2017 },
-      { src: 'artworks/web/sarangbi/sarangbi59-2018.jpg', title: '사랑비59', year: 2018 },
-      { src: 'artworks/web/sarangbi/sarangbi60-2018.jpg', title: '사랑비60', year: 2018 },
-      { src: 'artworks/web/sarangbi/sarangbi61-2019.jpg', title: '사랑비61', year: 2019 },
-      { src: 'artworks/web/sarangbi/sarangbi62-2019.jpg', title: '사랑비62', year: 2019 },
-      // 봄봄 시리즈 (7)
-      { src: 'artworks/web/bombom/early-spring-2020.jpg', title: '이른 봄', year: 2020 },
-      { src: 'artworks/web/bombom/petal-spring-2020.jpg', title: '꽃잎 끝에 걸린 봄날', year: 2020 },
-      { src: 'artworks/web/bombom/plum-spring-2020.jpg', title: '매화꽃에 걸린 봄', year: 2020 },
-      { src: 'artworks/web/bombom/wife-space-2020.jpg', title: '아내의 공간', year: 2020 },
-      { src: 'artworks/web/bombom/wind-spring-2020.jpg', title: '바람에 날려온 봄', year: 2020 },
-      { src: 'artworks/web/bombom/waiting-2021.jpg', title: '기다림', year: 2021 },
-      { src: 'artworks/web/bombom/bombom-2021.jpg', title: '봄봄', year: 2021 },
-      // 노닐다 시리즈 (27)
-      { src: 'artworks/web/nonilda/bombom-2022.jpg', title: '봄봄', year: 2022 },
-      { src: 'artworks/web/nonilda/bombom2-2022.jpg', title: '봄봄2', year: 2022 },
-      { src: 'artworks/web/nonilda/bombom4-2022.jpg', title: '봄봄4', year: 2022 },
-      { src: 'artworks/web/nonilda/bombom5-2022.jpg', title: '봄봄5', year: 2022 },
-      { src: 'artworks/web/nonilda/nonilda-2023.jpg', title: '노닐다', year: 2023 },
-      { src: 'artworks/web/nonilda/nonilda3-2023.jpg', title: '노닐다3', year: 2023 },
-      { src: 'artworks/web/nonilda/spring-shadow-2023.jpg', title: '봄 그림자', year: 2023 },
-      { src: 'artworks/web/nonilda/bombom6-2023.jpg', title: '봄봄6', year: 2023 },
-      { src: 'artworks/web/nonilda/bombom7-2023.jpg', title: '봄봄7', year: 2023 },
-      { src: 'artworks/web/nonilda/bombom8-2023.jpg', title: '봄봄8', year: 2023 },
-      { src: 'artworks/web/nonilda/bombom9-2023.jpg', title: '봄봄9', year: 2023 },
-      { src: 'artworks/web/nonilda/flow-2023.jpg', title: '흐름', year: 2023 },
-      { src: 'artworks/web/nonilda/passion-2023.jpg', title: '열정', year: 2023 },
-      { src: 'artworks/web/nonilda/nonilda4-2023.jpg', title: '노닐다4', year: 2023 },
-      { src: 'artworks/web/nonilda/nonilda5-2024.jpg', title: '노닐다5', year: 2024 },
-      { src: 'artworks/web/nonilda/nonilda7-2024.jpg', title: '노닐다7', year: 2024 },
-      { src: 'artworks/web/nonilda/spring-day2-2024.jpg', title: '봄날2', year: 2024 },
-      { src: 'artworks/web/nonilda/spring-day3-2024.jpg', title: '봄날3', year: 2024 },
-      { src: 'artworks/web/nonilda/passion-2024.jpg', title: '열정', year: 2024 },
-      { src: 'artworks/web/nonilda/nonilda10-2025.jpg', title: '노닐다10', year: 2025 },
-      { src: 'artworks/web/nonilda/nonilda11-2025.jpg', title: '노닐다11', year: 2025 },
-      { src: 'artworks/web/nonilda/nonilda13-2025.jpg', title: '노닐다13', year: 2025 },
-      { src: 'artworks/web/nonilda/nonilda14-2025.jpg', title: '노닐다14', year: 2025 },
-      { src: 'artworks/web/nonilda/nonilda15-2025.jpg', title: '노닐다15', year: 2025 },
-      { src: 'artworks/web/nonilda/nonilda17-2025.jpg', title: '노닐다17', year: 2025 },
-      { src: 'artworks/web/nonilda/nonilda18-2025.jpg', title: '노닐다18', year: 2025 },
-      { src: 'artworks/web/nonilda/nonilda9-2025.jpg', title: '노닐다9', year: 2025 },
-    ];
+    const SUPABASE_URL = 'https://tcjoluusbvyqlwexnfkw.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjam9sdXVzYnZ5cWx3ZXhuZmt3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDA3NzksImV4cCI6MjA5MTQ3Njc3OX0.bh-iNCetM7JZ4Z4kxC83XvFTU8vY_qQSbo7SD8rLB5w';
+    const MAX_SPHERE_IMAGES = 51;
 
-    const TOTAL = ALL_WORKS.length;
+    let images = [];
 
-    // Uniform sizing (~70×88 area) with varied aspect ratios
-    // Render at high res (200px range), scale DOWN at start for sharpness when zooming
+    async function loadSphereImages() {
+      try {
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const { data, error } = await sb
+          .from('artworks')
+          .select('src, title, year')
+          .eq('is_visible', true);
+
+        if (error) throw error;
+
+        let allWorks = data.map(d => ({ src: d.src, title: d.title, year: d.year }));
+
+        // 랜덤 셔플
+        for (let i = allWorks.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [allWorks[i], allWorks[j]] = [allWorks[j], allWorks[i]];
+        }
+
+        // 최대 51개만 선택
+        images = allWorks.slice(0, MAX_SPHERE_IMAGES);
+      } catch (e) {
+        console.warn('Supabase 로딩 실패:', e);
+        images = [];
+      }
+    }
+
+    // SIZES 배열은 충분히 크게 — 이미지 수에 맞춰 순환 사용
     const SIZES = [
       [168,210],[210,163],[170,214],[204,158],[163,204],
       [179,224],[214,168],[168,210],[204,158],[170,214],
@@ -331,27 +304,6 @@
       [170,214],
     ];
 
-    // Interleave series first, then shuffle — prevents same-series clustering
-    const series = {};
-    ALL_WORKS.forEach(w => {
-      const key = w.src.split('/')[1]; // folder name = series
-      if (!series[key]) series[key] = [];
-      series[key].push({ ...w });
-    });
-    const buckets = Object.values(series);
-    const images = [];
-    let maxLen = Math.max(...buckets.map(b => b.length));
-    for (let i = 0; i < maxLen; i++) {
-      for (const b of buckets) {
-        if (i < b.length) images.push(b[i]);
-      }
-    }
-    // Final shuffle with constraint: no two adjacent same-series
-    for (let i = images.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [images[i], images[j]] = [images[j], images[i]];
-    }
-
     // ═══════════════════════════════════════
     // FIBONACCI SPHERE — unit sphere points
     // ═══════════════════════════════════════
@@ -360,11 +312,9 @@
 
     function updateSizes() {
       const w = window.innerWidth;
-      // Smooth scaling: linearly interpolate between 360px and 1200px
       const t = Math.max(0, Math.min(1, (w - 360) / (1200 - 360)));
-      SPHERE_RADIUS = Math.round(273 + t * 77);    // 273 ~ 350
-      BOX_SIZE = Math.round(408 + t * 92);          // 408 ~ 500
-      // Sync JS card dimensions + DOM inline styles
+      SPHERE_RADIUS = Math.round(273 + t * 77);
+      BOX_SIZE = Math.round(408 + t * 92);
       cards.forEach(c => {
         c.w = BOX_SIZE;
         c.h = BOX_SIZE;
@@ -374,63 +324,66 @@
         c.el.querySelector('img').style.maxHeight = BOX_SIZE + 'px';
       });
     }
-    updateSizes(); // safe — cards is empty on first call
+    updateSizes();
 
-    const goldenAngle = Math.PI * (3 - Math.sqrt(5));
-    const spherePoints = [];
-
-    for (let i = 0; i < TOTAL; i++) {
-      const y = 1 - ((i + 0.5) / TOTAL) * 2;
-      const radiusAtY = Math.sqrt(1 - y * y);
-      const theta = goldenAngle * i;
-      spherePoints.push({
-        x: Math.cos(theta) * radiusAtY,
-        y: y,
-        z: Math.sin(theta) * radiusAtY,
-      });
-    }
-
-    // ═══════════════════════════════════════
-    // CREATE DOM CARDS
-    // ═══════════════════════════════════════
     const sceneEl = document.getElementById('scene');
     const tooltipEl = document.getElementById('tooltip');
 
-    images.forEach((img, i) => {
-      const size = SIZES[i % SIZES.length];
+    // Supabase 로드 후 구 생성
+    (async function buildSphere() {
+      await loadSphereImages();
 
-      // Outer box — 170×170 transparent, uniform spacing
-      const box = document.createElement('div');
-      box.className = 'card-box';
+      if (images.length === 0) return;
 
-      // Inner card — image determines its own size within 170px max
-      const el = document.createElement('div');
-      el.className = 'card';
+      const TOTAL = images.length;
+      const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+      const spherePoints = [];
 
-      const imgEl = document.createElement('img');
-      imgEl.src = img.src;
-      imgEl.alt = img.title || '';
-      imgEl.draggable = false;
-      el.appendChild(imgEl);
-
-      if (img.title) {
-        el.addEventListener('mouseenter', () => {
-          tooltipEl.textContent = `${img.title} (${img.year})`;
-          tooltipEl.classList.add('visible');
+      for (let i = 0; i < TOTAL; i++) {
+        const y = 1 - ((i + 0.5) / TOTAL) * 2;
+        const radiusAtY = Math.sqrt(1 - y * y);
+        const theta = goldenAngle * i;
+        spherePoints.push({
+          x: Math.cos(theta) * radiusAtY,
+          y: y,
+          z: Math.sin(theta) * radiusAtY,
         });
-        el.addEventListener('mouseleave', () => tooltipEl.classList.remove('visible'));
-        el.addEventListener('mousemove', (e) => {
-          tooltipEl.style.left = (e.clientX + 16) + 'px';
-          tooltipEl.style.top = (e.clientY - 10) + 'px';
-        });
-        el.style.cursor = 'pointer';
       }
 
-      box.appendChild(el);
-      sceneEl.appendChild(box);
-      cards.push({ el: box, w: BOX_SIZE, h: BOX_SIZE, sphere: spherePoints[i] });
-    });
-    updateSizes(); // apply sizes to newly created cards
+      images.forEach((img, i) => {
+        const size = SIZES[i % SIZES.length];
+
+        const box = document.createElement('div');
+        box.className = 'card-box';
+
+        const el = document.createElement('div');
+        el.className = 'card';
+
+        const imgEl = document.createElement('img');
+        imgEl.src = img.src;
+        imgEl.alt = img.title || '';
+        imgEl.draggable = false;
+        el.appendChild(imgEl);
+
+        if (img.title) {
+          el.addEventListener('mouseenter', () => {
+            tooltipEl.textContent = `${img.title} (${img.year})`;
+            tooltipEl.classList.add('visible');
+          });
+          el.addEventListener('mouseleave', () => tooltipEl.classList.remove('visible'));
+          el.addEventListener('mousemove', (e) => {
+            tooltipEl.style.left = (e.clientX + 16) + 'px';
+            tooltipEl.style.top = (e.clientY - 10) + 'px';
+          });
+          el.style.cursor = 'pointer';
+        }
+
+        box.appendChild(el);
+        sceneEl.appendChild(box);
+        cards.push({ el: box, w: BOX_SIZE, h: BOX_SIZE, sphere: spherePoints[i] });
+      });
+      updateSizes();
+    })();
 
     window.addEventListener('resize', updateSizes);
 

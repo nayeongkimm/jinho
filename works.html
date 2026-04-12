@@ -314,23 +314,30 @@
       color: var(--text-muted);
     }
     .artwork-img-wrap {
+      position: relative;
       width: 100%;
-      aspect-ratio: 1 / 1;
-      background: #FFFFFF;
-      border: 1px solid #F7F5F3;
-      background: #FFFFFF;
       overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    }
+    .sold-out-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(255, 255, 255, 0.5);
+      padding: 4px 8px;
+      border-radius: 0;
+      z-index: 2;
+    }
+    .sold-out-badge span {
+      font-family: var(--font-en);
+      font-size: 12px;
+      font-weight: 400;
+      color: #6B6661;
+      line-height: normal;
     }
     .artwork-img-wrap img {
       display: block;
-      max-width: 100%;
-      max-height: 100%;
-      width: auto;
+      width: 100%;
       height: auto;
-      object-fit: contain;
       transition: transform 0.4s ease;
     }
     .artwork-card:hover .artwork-img-wrap img {
@@ -362,18 +369,6 @@
     }
     .artwork-grid.single-view .artwork-card {
       gap: 14px;
-    }
-    .artwork-grid.single-view .artwork-img-wrap {
-      aspect-ratio: unset;
-      background: none;
-      border: none;
-      display: block;
-    }
-    .artwork-grid.single-view .artwork-img-wrap img {
-      width: 100%;
-      max-width: 100%;
-      max-height: unset;
-      height: auto;
     }
     .artwork-grid.single-view .artwork-img-wrap img {
       width: 100%;
@@ -779,7 +774,8 @@
           year: d.year,
           size: d.size || '',
           series: d.series,
-          is_selected: d.is_selected
+          is_selected: d.is_selected,
+          is_sold: d.is_sold || false
         }));
         SELECTED_WORKS = ALL_WORKS.filter(w => w.is_selected);
       } catch (e) {
@@ -1016,6 +1012,7 @@
         card.innerHTML = `
           <span class="artwork-number">${num}.</span>
           <div class="artwork-img-wrap">
+            ${work.is_sold ? '<div class="sold-out-badge"><span>Sold Out</span></div>' : ''}
             <img src="${work.src}" alt="${work.title}" loading="lazy" />
           </div>
           <div class="artwork-info">

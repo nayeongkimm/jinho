@@ -664,10 +664,10 @@
         <div class="settings-card">
           <h3>사이트 링크</h3>
           <p style="font-size:14px;color:var(--text-secondary);margin-bottom:12px;">
-            <a href="index.html" style="color:var(--accent);">메인 페이지</a> ·
-            <a href="works.html" style="color:var(--accent);">Works</a> ·
-            <a href="about.html" style="color:var(--accent);">About</a> ·
-            <a href="shop.html" style="color:var(--accent);">Shop</a>
+            <a href="index.html" target="_blank" style="color:var(--accent);">메인 페이지</a> ·
+            <a href="works.html" target="_blank" style="color:var(--accent);">Works</a> ·
+            <a href="about.html" target="_blank" style="color:var(--accent);">About</a> ·
+            <a href="shop.html" target="_blank" style="color:var(--accent);">Shop</a>
           </p>
         </div>
       </div>
@@ -699,6 +699,10 @@
         <div class="form-check">
           <input type="checkbox" id="editVisible" />
           <label for="editVisible">사이트에 표시</label>
+        </div>
+        <div class="form-check">
+          <input type="checkbox" id="editSold" />
+          <label for="editSold">판매 완료 (Sold Out)</label>
         </div>
       </div>
       <div class="form-group" style="margin-top:16px;">
@@ -870,6 +874,7 @@
             <div class="work-card-header">
               <span class="work-card-num">${num}.</span>
               <div class="work-card-badges">
+                ${w.is_sold ? '<span class="badge" style="background:#FDF0EE;color:#C0382B;">Sold</span>' : ''}
                 ${w.is_selected ? '<span class="badge badge-selected">Selected</span>' : ''}
                 ${w.is_visible ? '<span class="badge badge-visible">공개</span>' : '<span class="badge badge-hidden">비공개</span>'}
               </div>
@@ -991,6 +996,7 @@
       document.getElementById('editSize').value = '';
       document.getElementById('editSelected').checked = false;
       document.getElementById('editVisible').checked = true;
+      document.getElementById('editSold').checked = false;
       document.getElementById('editSrc').value = '';
       document.getElementById('editHqSrc').value = '';
       resetUpload();
@@ -1013,6 +1019,7 @@
         document.getElementById('editSize').value = w.size || '';
         document.getElementById('editSelected').checked = w.is_selected;
         document.getElementById('editVisible').checked = w.is_visible;
+        document.getElementById('editSold').checked = w.is_sold || false;
         document.getElementById('editSrc').value = w.src;
         document.getElementById('editHqSrc').value = w.hq_src || '';
         // 기존 이미지 미리보기
@@ -1044,6 +1051,7 @@
         size:        document.getElementById('editSize').value.trim(),
         is_selected: document.getElementById('editSelected').checked,
         is_visible:  document.getElementById('editVisible').checked,
+        is_sold:     document.getElementById('editSold').checked,
         src:         document.getElementById('editSrc').value.trim(),
         hq_src:      document.getElementById('editHqSrc').value.trim(),
       };

@@ -571,6 +571,7 @@
       <div class="admin-tabs" id="adminTabs">
         <button class="admin-tab active" data-panel="works">작품 관리</button>
         <button class="admin-tab" data-panel="about">About</button>
+        <button class="admin-tab" data-panel="news">News</button>
         <button class="admin-tab" data-panel="settings">설정</button>
       </div>
       <button class="btn btn-outline btn-sm" id="logoutBtn">로그아웃</button>
@@ -648,6 +649,17 @@
       </div>
 
       <!-- ── Settings Panel ── -->
+      <!-- ── News Panel ── -->
+      <div class="panel" id="panelNews">
+        <div class="works-toolbar">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="work-count" id="newsCount"></span>
+          </div>
+          <button class="btn btn-accent btn-sm" id="addNewsBtn">+ 뉴스 추가</button>
+        </div>
+        <div class="works-grid" id="newsGrid" style="grid-template-columns:repeat(3,1fr);"></div>
+      </div>
+
       <div class="panel" id="panelSettings">
         <div class="settings-card" style="margin-bottom:24px;">
           <h3>비밀번호 변경</h3>
@@ -667,6 +679,7 @@
             <a href="index.html" target="_blank" style="color:var(--accent);">메인 페이지</a> ·
             <a href="works.html" target="_blank" style="color:var(--accent);">Works</a> ·
             <a href="about.html" target="_blank" style="color:var(--accent);">About</a> ·
+            <a href="news.html" target="_blank" style="color:var(--accent);">News</a> ·
             <a href="shop.html" target="_blank" style="color:var(--accent);">Shop</a>
           </p>
         </div>
@@ -738,6 +751,61 @@
       <div class="modal-actions">
         <button class="btn btn-outline btn-sm" id="deleteCancelBtn">취소</button>
         <button class="btn btn-danger btn-sm" id="deleteConfirmBtn">삭제</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ NEWS MODAL ═══ -->
+  <div class="modal-overlay" id="newsModal">
+    <div class="modal">
+      <div class="modal-title" id="newsModalTitle">뉴스 추가</div>
+      <input type="hidden" id="newsEditId" />
+      <div class="form-group">
+        <label class="form-label">제목</label>
+        <input class="form-input" id="newsTitle" placeholder="뉴스 제목" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">URL</label>
+        <input class="form-input" id="newsUrl" placeholder="https://..." />
+      </div>
+      <div class="form-group">
+        <label class="form-label">출처</label>
+        <input class="form-input" id="newsSource" placeholder="예: 울산프레스, YouTube" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">날짜</label>
+        <input class="form-input" type="date" id="newsDate" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">유형</label>
+        <select class="form-input" id="newsType">
+          <option value="article">기사</option>
+          <option value="youtube">유튜브</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">썸네일 URL (선택)</label>
+        <input class="form-input" id="newsThumbnail" placeholder="비워두면 유튜브는 자동 추출" />
+        <img id="newsThumbPreview" src="" alt="" style="display:none;max-width:100%;margin-top:8px;border-radius:8px;" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-outline btn-sm" id="newsCancelBtn">취소</button>
+        <button class="btn btn-accent btn-sm" id="newsSaveBtn">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ NEWS DELETE MODAL ═══ -->
+  <div class="modal-overlay" id="newsDeleteModal">
+    <div class="modal" style="max-width:380px;">
+      <div class="modal-title">뉴스 삭제</div>
+      <p style="font-size:14px;color:var(--text-secondary);margin-bottom:8px;">
+        "<span id="newsDeleteName"></span>"을(를) 정말 삭제하시겠습니까?
+      </p>
+      <input type="hidden" id="newsDeleteId" />
+      <div class="modal-actions">
+        <button class="btn btn-outline btn-sm" id="newsDeleteCancelBtn">취소</button>
+        <button class="btn btn-danger btn-sm" id="newsDeleteConfirmBtn">삭제</button>
       </div>
     </div>
   </div>
@@ -1650,6 +1718,309 @@
       document.getElementById('newPw').value = '';
       document.getElementById('confirmPw').value = '';
     });
+
+    // ═══════════════════════════════════════
+    // NEWS MANAGEMENT
+    // ═══════════════════════════════════════
+    let allNews = [];
+    const newsModal = document.getElementById('newsModal');
+    const newsDeleteModal = document.getElementById('newsDeleteModal');
+
+    function getYoutubeThumbnail(url) {
+      let videoId = '';
+      try {
+        const u = new URL(url);
+        if (u.hostname.includes('youtu.be')) {
+          videoId = u.pathname.slice(1).split('?')[0];
+        } else if (u.hostname.includes('youtube.com')) {
+          videoId = u.searchParams.get('v') || '';
+        }
+      } catch(e) {}
+      return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : '';
+    }
+
+    function formatNewsDate(dateStr) {
+      if (!dateStr) return '';
+      const d = new Date(dateStr);
+      return d.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    async function loadNews() {
+      const { data, error } = await sb
+        .from('news')
+        .select('*')
+        .order('date', { ascending: false });
+
+      if (error) {
+        showToast('뉴스 로딩 실패: ' + error.message, 'error');
+        return;
+      }
+      allNews = data || [];
+      renderNews(allNews);
+    }
+
+    function renderNews(items) {
+      const grid = document.getElementById('newsGrid');
+      document.getElementById('newsCount').textContent = items.length + '개 뉴스';
+
+      if (items.length === 0) {
+        grid.innerHTML = '<p style="text-align:center;padding:40px;color:var(--text-muted);grid-column:1/-1;">등록된 뉴스가 없습니다.</p>';
+        return;
+      }
+
+      grid.innerHTML = items.map(item => {
+        const isYoutube = item.type === 'youtube' || (item.url && item.url.includes('youtu'));
+        const thumb = item.thumbnail || (isYoutube ? getYoutubeThumbnail(item.url) : '');
+        const imgHtml = thumb
+          ? `<img src="${thumb}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy" />`
+          : `<div style="width:100%;height:100%;background:var(--bg,#f5f2f0);display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:13px;">${isYoutube ? '▶ YouTube' : '기사'}</div>`;
+        return `
+          <div class="work-card" data-id="${item.id}">
+            <div class="work-card-header">
+              <span class="work-card-num">${isYoutube ? '▶' : '📰'}</span>
+              <div class="work-card-badges">
+                <span class="badge ${item.is_visible ? 'badge-visible' : 'badge-hidden'}">${item.is_visible ? '공개' : '비공개'}</span>
+              </div>
+            </div>
+            <div class="work-card-img" style="aspect-ratio:16/10;">
+              ${imgHtml}
+            </div>
+            <div class="work-card-info">
+              <div class="work-card-title">${esc(item.title)}</div>
+              <div class="work-card-meta">${formatNewsDate(item.date)}${item.source ? ' · ' + esc(item.source) : ''}</div>
+            </div>
+            <div class="work-card-actions">
+              <button class="btn-icon news-edit-btn" title="수정" data-id="${item.id}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                수정
+              </button>
+              <button class="btn-icon news-del-btn" title="삭제" data-id="${item.id}" data-title="${esc(item.title)}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                삭제
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Add news
+    document.getElementById('addNewsBtn').addEventListener('click', () => {
+      document.getElementById('newsModalTitle').textContent = '뉴스 추가';
+      document.getElementById('newsEditId').value = '';
+      document.getElementById('newsTitle').value = '';
+      document.getElementById('newsUrl').value = '';
+      document.getElementById('newsSource').value = '';
+      document.getElementById('newsDate').value = new Date().toISOString().split('T')[0];
+      document.getElementById('newsType').value = 'article';
+      document.getElementById('newsThumbnail').value = '';
+      document.getElementById('newsThumbPreview').style.display = 'none';
+      newsModal.classList.add('open');
+    });
+
+    // Edit / Delete news (delegate)
+    document.getElementById('newsGrid').addEventListener('click', (e) => {
+      const editBtn = e.target.closest('.news-edit-btn');
+      const delBtn = e.target.closest('.news-del-btn');
+
+      if (editBtn) {
+        const id = editBtn.dataset.id;
+        const item = allNews.find(x => String(x.id) === id);
+        if (!item) return;
+        document.getElementById('newsModalTitle').textContent = '뉴스 수정';
+        document.getElementById('newsEditId').value = item.id;
+        document.getElementById('newsTitle').value = item.title || '';
+        document.getElementById('newsUrl').value = item.url || '';
+        document.getElementById('newsSource').value = item.source || '';
+        document.getElementById('newsDate').value = item.date || '';
+        document.getElementById('newsType').value = item.type || 'article';
+        document.getElementById('newsThumbnail').value = item.thumbnail || '';
+        const preview = document.getElementById('newsThumbPreview');
+        const thumb = item.thumbnail || (item.url && item.url.includes('youtu') ? getYoutubeThumbnail(item.url) : '');
+        if (thumb) { preview.src = thumb; preview.style.display = 'block'; }
+        else { preview.style.display = 'none'; }
+        newsModal.classList.add('open');
+      }
+
+      if (delBtn) {
+        document.getElementById('newsDeleteId').value = delBtn.dataset.id;
+        document.getElementById('newsDeleteName').textContent = delBtn.dataset.title;
+        newsDeleteModal.classList.add('open');
+      }
+    });
+
+    // Save news
+    document.getElementById('newsSaveBtn').addEventListener('click', async () => {
+      const id = document.getElementById('newsEditId').value;
+      const payload = {
+        title:     document.getElementById('newsTitle').value.trim(),
+        url:       document.getElementById('newsUrl').value.trim(),
+        source:    document.getElementById('newsSource').value.trim(),
+        date:      document.getElementById('newsDate').value || null,
+        type:      document.getElementById('newsType').value,
+        thumbnail: document.getElementById('newsThumbnail').value.trim(),
+        is_visible: true,
+      };
+
+      if (!payload.title) { showToast('제목을 입력하세요.', 'error'); return; }
+      if (!payload.url) { showToast('URL을 입력하세요.', 'error'); return; }
+
+      let error;
+      if (id) {
+        ({ error } = await sb.from('news').update(payload).eq('id', id));
+      } else {
+        ({ error } = await sb.from('news').insert(payload));
+      }
+
+      if (error) { showToast('저장 실패: ' + error.message, 'error'); return; }
+      showToast(id ? '뉴스가 수정되었습니다!' : '뉴스가 추가되었습니다!');
+      newsModal.classList.remove('open');
+      loadNews();
+    });
+
+    // Delete news
+    document.getElementById('newsDeleteConfirmBtn').addEventListener('click', async () => {
+      const id = document.getElementById('newsDeleteId').value;
+      const { error } = await sb.from('news').delete().eq('id', id);
+      if (error) { showToast('삭제 실패: ' + error.message, 'error'); return; }
+      showToast('뉴스가 삭제되었습니다!');
+      newsDeleteModal.classList.remove('open');
+      loadNews();
+    });
+
+    // Modal close handlers
+    document.getElementById('newsCancelBtn').addEventListener('click', () => newsModal.classList.remove('open'));
+    newsModal.addEventListener('click', (e) => { if (e.target === newsModal) newsModal.classList.remove('open'); });
+    document.getElementById('newsDeleteCancelBtn').addEventListener('click', () => newsDeleteModal.classList.remove('open'));
+    newsDeleteModal.addEventListener('click', (e) => { if (e.target === newsDeleteModal) newsDeleteModal.classList.remove('open'); });
+
+    // URL 입력 시 유튜브 썸네일 미리보기
+    // URL 입력 시 자동으로 정보 가져오기
+    document.getElementById('newsUrl').addEventListener('blur', async () => {
+      const url = document.getElementById('newsUrl').value.trim();
+      if (!url) return;
+
+      const titleInput = document.getElementById('newsTitle');
+      const thumbInput = document.getElementById('newsThumbnail');
+      const preview = document.getElementById('newsThumbPreview');
+      const sourceInput = document.getElementById('newsSource');
+      const typeSelect = document.getElementById('newsType');
+
+      // 유튜브 URL → oEmbed API로 제목/썸네일 자동 추출
+      if (url.includes('youtu')) {
+        typeSelect.value = 'youtube';
+        try {
+          const res = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`);
+          if (res.ok) {
+            const data = await res.json();
+            if (!titleInput.value) titleInput.value = data.title || '';
+            if (!sourceInput.value) sourceInput.value = 'YouTube';
+            const thumb = getYoutubeThumbnail(url);
+            if (thumb) {
+              preview.src = thumb;
+              preview.style.display = 'block';
+            }
+            showToast('유튜브 정보를 자동으로 가져왔습니다!');
+          }
+        } catch(e) {
+          console.warn('YouTube oEmbed 실패:', e);
+          const thumb = getYoutubeThumbnail(url);
+          if (thumb) { preview.src = thumb; preview.style.display = 'block'; }
+        }
+      } else {
+        // 일반 기사 URL → 프록시로 메타 태그에서 제목/날짜/이미지 추출
+        typeSelect.value = 'article';
+        try {
+          const domain = new URL(url).hostname.replace('www.', '');
+          if (!sourceInput.value) sourceInput.value = domain;
+
+          // 여러 CORS 프록시를 동시에 시도 → 가장 빠른 응답 사용
+          async function fetchViaProxy(makeUrl, targetUrl) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 8000);
+            const res = await fetch(makeUrl(targetUrl), { signal: controller.signal });
+            clearTimeout(timer);
+            if (!res.ok) throw new Error('not ok');
+            const ct = res.headers.get('content-type') || '';
+            let h = '';
+            if (ct.includes('json')) {
+              const json = await res.json();
+              h = json.contents || json.data || '';
+            } else {
+              h = await res.text();
+            }
+            if (!h || h.length < 200) throw new Error('empty');
+            return h;
+          }
+
+          const proxies = [
+            u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
+            u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+            u => `https://corsproxy.io/?${encodeURIComponent(u)}`
+          ];
+
+          let html = '';
+          try {
+            html = await Promise.any(proxies.map(p => fetchViaProxy(p, url)));
+          } catch(e) { html = ''; }
+
+          if (html) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            // 제목: og:title → twitter:title → <title>
+            const ogTitle = doc.querySelector('meta[property="og:title"]')?.getAttribute('content')
+              || doc.querySelector('meta[name="twitter:title"]')?.getAttribute('content')
+              || doc.querySelector('title')?.textContent
+              || '';
+            if (ogTitle && !titleInput.value) titleInput.value = ogTitle.trim();
+
+            // 출처: og:site_name → 매체 이름으로 교체
+            const ogSiteName = doc.querySelector('meta[property="og:site_name"]')?.getAttribute('content') || '';
+            if (ogSiteName) sourceInput.value = ogSiteName.trim();
+
+            // 날짜: article:published_time → date meta 등
+            const dateInput = document.getElementById('newsDate');
+            const ogDate = doc.querySelector('meta[property="article:published_time"]')?.getAttribute('content')
+              || doc.querySelector('meta[name="article:published_time"]')?.getAttribute('content')
+              || doc.querySelector('meta[property="og:article:published_time"]')?.getAttribute('content')
+              || doc.querySelector('meta[name="date"]')?.getAttribute('content')
+              || doc.querySelector('meta[name="pubdate"]')?.getAttribute('content')
+              || '';
+            if (ogDate) {
+              const d = new Date(ogDate);
+              if (!isNaN(d)) dateInput.value = d.toISOString().split('T')[0];
+            }
+
+            // 썸네일: og:image → twitter:image
+            const ogImage = doc.querySelector('meta[property="og:image"]')?.getAttribute('content')
+              || doc.querySelector('meta[name="twitter:image"]')?.getAttribute('content')
+              || '';
+            if (ogImage && !thumbInput.value) {
+              thumbInput.value = ogImage;
+              preview.src = ogImage;
+              preview.style.display = 'block';
+            }
+
+            showToast('기사 정보를 자동으로 가져왔습니다!');
+          } else {
+            showToast('기사 정보를 가져오지 못했습니다. 직접 입력해주세요.');
+          }
+        } catch(e) {
+          console.warn('기사 메타 추출 실패:', e);
+          showToast('기사 정보를 가져오지 못했습니다.');
+        }
+      }
+    });
+
+    // Load news on tab switch
+    const origTabHandler = document.getElementById('adminTabs');
+    origTabHandler.addEventListener('click', (e) => {
+      if (e.target.dataset.panel === 'news') loadNews();
+    });
+
+    // Initial load if news tab is active
+    loadNews();
   </script>
 </body>
 </html>
